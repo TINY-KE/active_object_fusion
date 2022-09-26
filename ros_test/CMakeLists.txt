@@ -94,6 +94,9 @@ find_package(
     cv_bridge
     image_transport
     roslib
+
+    # yolo
+    darknet_ros_msgs
 )
 
 

@@ -25,6 +25,10 @@
 #include "sensor_msgs/Image.h"
 #include "geometry_msgs/Twist.h"
 #include "image_subscriber.h"
+// darknet_ros_msgs
+#include <darknet_ros_msgs/BoundingBoxes.h>
+#include <darknet_ros_msgs/BoundingBox.h>
+#include <darknet_ros_msgs/ObjectCount.h>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
@@ -32,18 +36,18 @@
 
 // using namespace std;
 // 近似同步器
-typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> SyncPolicy;
+typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image, darknet_ros_msgs::BoundingBoxes> SyncPolicy;
 
 class IMGSubscriber {
   public:
-    IMGSubscriber(ros::NodeHandle &nh, std::string color_topic_name, std::string depth_topic_name, size_t buff_size);
+    IMGSubscriber(ros::NodeHandle &nh, std::string color_topic_name, std::string depth_topic_name, std::string bbox_topic_name, size_t buff_size);
 
     IMGSubscriber() = default;
 
     void ParseData(std::deque<sensor_msgs::Image> &image_color_data_buff, std::deque<sensor_msgs::Image> &image_depth_data_buff);
 
   private:
-    void image_callback(const sensor_msgs::ImageConstPtr& msgImg,const sensor_msgs::ImageConstPtr& msgDepth);
+    void image_callback(const sensor_msgs::ImageConstPtr& msgImg,const sensor_msgs::ImageConstPtr& msgDepth, const darknet_ros_msgs::BoundingBoxes &msgBbox);
 
   private:
     ros::NodeHandle nh_;
@@ -51,9 +55,11 @@ class IMGSubscriber {
 
     std::deque<sensor_msgs::Image> new_color_data_;
     std::deque<sensor_msgs::Image> new_depth_data_;
+    std::deque<darknet_ros_msgs::BoundingBoxes> new_bbox_data_;
 
     std::shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> image_sub_color_ptr;
     std::shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> image_sub_depth_ptr;
+    std::shared_ptr<message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes>> image_sub_bbox_ptr;
     std::shared_ptr<message_filters::Synchronizer<SyncPolicy>> sync_ptr;
 
     std::mutex buff_mutex_;
