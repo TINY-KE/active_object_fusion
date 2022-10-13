@@ -16,6 +16,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
@@ -40,13 +41,13 @@
 #include "Converter.h"
 
 // 深度滤波
-#include "JBF.h"
+//#include "JBF.h"
 #include "Kernel.h"
 #include "Config.h"
 
 // YOLOX
 #include "Global.h"
-#include "YOLOX.h"
+//#include "YOLOX.h"  //采用ros版本yolo,因此去除yolox的Semanticer
 
 namespace ORB_SLAM2
 {
@@ -57,18 +58,18 @@ class Map;
 class LocalMapping;
 class LoopClosing;
 class System;
-class YOLOX;
+//class YOLOX;
 
 
 class Tracking
 {
 
 public:
-    Tracking(System *pSys, ORBVocabulary *pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase *pKFDB, const string &strSettingPath, const int sensor, const string &flag, const bool SemanticOnline);
+    Tracking(System *pSys, ORBVocabulary *pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase *pKFDB, const string &strSettingPath, const int sensor, const string &flag, const bool SemanticOnline = true);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
     cv::Mat GrabImageStereo(const cv::Mat &imRectLeft,const cv::Mat &imRectRight, const double &timestamp);
-    cv::Mat GrabImageRGBD(const cv::Mat &imRGB, const cv::Mat &imD, const double &timestamp, const bool bSemanticOnline);
+    cv::Mat GrabImageRGBD(const cv::Mat &imRGB, const cv::Mat &imD, const double &timestamp, const std::vector<BoxSE> &bbox, const bool bSemanticOnline);
     cv::Mat GrabImageMonocular( const cv::Mat &im,
                                 const double &timestamp,
                                 const bool bSemanticOnline);
@@ -76,7 +77,6 @@ public:
     void SetLocalMapper(LocalMapping* pLocalMapper);
     void SetLoopClosing(LoopClosing* pLoopClosing);
     void SetViewer(Viewer* pViewer);
-    void SetSemanticer(YOLOX* detector); //yolox
 
     // Load new settings
     // The focal lenght should be similar or scale prediction will fail when projecting points
@@ -164,7 +164,6 @@ public:
     int mnObjectIniFrameID;
     int mflag2 = 0;
 
-    std::shared_ptr<YOLOX> yolox_ptr_; // yolox ptr
     // 0: no constraint; 1: use ground truth; 2: use imu
     int miConstraintType = 0;
     bool mbSemanticOnline;
@@ -207,8 +206,8 @@ protected:
     //Other Thread Pointers
     LocalMapping* mpLocalMapper;
     LoopClosing* mpLoopClosing;
-    // NOTE
-    YOLOX* Semanticer;
+    // NOTE 采用ros版本yolo,因此去除yolox的Semanticer
+//    YOLOX* Semanticer;
 
     //ORB
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;

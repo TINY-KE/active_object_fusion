@@ -36,6 +36,7 @@
 #else
 	#include <Eigen/Core>
 	#include <Eigen/Dense>
+    #include <eigen3/Eigen/Dense>
 #endif
 
 #include <cmath>

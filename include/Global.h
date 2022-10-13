@@ -11,6 +11,7 @@
 
 #include <string>
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 extern std::string WORK_SPACE_PATH;
 extern Eigen::Matrix4d INIT_POSE;

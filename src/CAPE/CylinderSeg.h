@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 using namespace std;
 typedef Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>  MatrixXb;

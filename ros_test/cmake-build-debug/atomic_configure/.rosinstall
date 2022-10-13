@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/devel/setup.sh

@@ -58,6 +58,8 @@
         "tuple": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "forward_list": "cpp",
+        "dense": "cpp"
     }
 }

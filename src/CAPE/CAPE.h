@@ -12,6 +12,7 @@
 #include "Histogram.h"
 #include <opencv2/opencv.hpp>
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 typedef Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>  MatrixXb;
 

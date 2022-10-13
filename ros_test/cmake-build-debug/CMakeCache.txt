@@ -83,6 +83,15 @@ BLAS_sunperf_LIBRARY:FILEPATH=BLAS_sunperf_LIBRARY-NOTFOUND
 //Path to a library.
 BLAS_vecLib_LIBRARY:FILEPATH=BLAS_vecLib_LIBRARY-NOTFOUND
 
+//Builds the googlemock subproject
+BUILD_GMOCK:BOOL=ON
+
+//Builds the googletest subproject
+BUILD_GTEST:BOOL=OFF
+
+//Build shared libraries (DLLs).
+BUILD_SHARED_LIBS:BOOL=ON
+
 //Boost atomic library (debug)
 Boost_ATOMIC_LIBRARY_DEBUG:FILEPATH=/usr/lib/x86_64-linux-gnu/libboost_atomic.so
 
@@ -151,6 +160,19 @@ Boost_THREAD_LIBRARY_DEBUG:FILEPATH=/usr/lib/x86_64-linux-gnu/libboost_thread.so
 
 //Boost thread library (release)
 Boost_THREAD_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libboost_thread.so
+
+//Catkin enable testing
+CATKIN_ENABLE_TESTING:BOOL=ON
+
+//Prefix to apply to package generated via gendebian
+CATKIN_PACKAGE_PREFIX:STRING=
+
+//Catkin skip testing
+CATKIN_SKIP_TESTING:BOOL=OFF
+
+//Replace the CMake install command with a custom implementation
+// using symlinks instead of copying resources
+CATKIN_SYMLINK_INSTALL:BOOL=OFF
 
 //Link with static Boost libraries
 CGAL_Boost_USE_STATIC_LIBS:BOOL=OFF
@@ -441,7 +463,7 @@ CUDA_TOOLKIT_INCLUDE:PATH=/usr/local/cuda/include
 //Toolkit location.
 CUDA_TOOLKIT_ROOT_DIR:PATH=/usr/local/cuda
 
-//Use the static version of the CUDA runtime library if available
+//OFF
 CUDA_USE_STATIC_CUDA_RUNTIME:BOOL=OFF
 
 //Print out the commands run while compiling the CUDA source file.
@@ -519,6 +541,12 @@ DAVIDSDK_INCLUDE_DIR:PATH=DAVIDSDK_INCLUDE_DIR-NOTFOUND
 //Path to a library.
 DAVIDSDK_LIBRARY:FILEPATH=DAVIDSDK_LIBRARY-NOTFOUND
 
+//Path to a program.
+DOXYGEN_EXECUTABLE:FILEPATH=/usr/bin/doxygen
+
+//Doxygen found
+DOXYGEN_FOUND:BOOL=TRUE
+
 //DepthSense SDK directory
 DSSDK_DIR:PATH=DSSDK_DIR-NOTFOUND
 
@@ -537,6 +565,12 @@ EIGEN3_INCLUDE_DIR:PATH=/usr/include/eigen3
 //Path to a file.
 EIGEN_INCLUDE_DIRS:PATH=/usr/include/eigen3
 
+//Path to a program.
+EMPY_EXECUTABLE:FILEPATH=/usr/bin/empy
+
+//Empy script
+EMPY_SCRIPT:STRING=/usr/bin/empy
+
 //Path to a file.
 ENSENSO_INCLUDE_DIR:PATH=ENSENSO_INCLUDE_DIR-NOTFOUND
 
@@ -554,6 +588,45 @@ FLANN_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a
 
 //Path to a library.
 FLANN_LIBRARY_DEBUG:FILEPATH=/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a
+
+//Path to a library.
+GMOCK_LIBRARY:FILEPATH=GMOCK_LIBRARY-NOTFOUND
+
+//Path to a library.
+GMOCK_LIBRARY_DEBUG:FILEPATH=GMOCK_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+GMOCK_MAIN_LIBRARY:FILEPATH=GMOCK_MAIN_LIBRARY-NOTFOUND
+
+//Path to a library.
+GMOCK_MAIN_LIBRARY_DEBUG:FILEPATH=GMOCK_MAIN_LIBRARY_DEBUG-NOTFOUND
+
+//The directory containing a CMake configuration file for GMock.
+GMock_DIR:PATH=GMock_DIR-NOTFOUND
+
+//Path to a file.
+GTEST_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a library.
+GTEST_LIBRARY:FILEPATH=GTEST_LIBRARY-NOTFOUND
+
+//Path to a library.
+GTEST_LIBRARY_DEBUG:FILEPATH=GTEST_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+GTEST_MAIN_LIBRARY:FILEPATH=GTEST_MAIN_LIBRARY-NOTFOUND
+
+//Path to a library.
+GTEST_MAIN_LIBRARY_DEBUG:FILEPATH=GTEST_MAIN_LIBRARY_DEBUG-NOTFOUND
+
+//The directory containing a CMake configuration file for GTest.
+GTest_DIR:PATH=GTest_DIR-NOTFOUND
+
+//LSB Distrib tag
+KYLIN:BOOL=TRUE
+
+//LSB Distrib - codename tag
+KYLIN_KYLIN:BOOL=TRUE
 
 //Path to a library.
 LAPACK_Accelerate_LIBRARY:FILEPATH=LAPACK_Accelerate_LIBRARY-NOTFOUND
@@ -593,6 +666,15 @@ LIBUSB_1_INCLUDE_DIR:PATH=/usr/include
 
 //Path to a library.
 LIBUSB_1_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libusb-1.0.so
+
+//lsb_release executable was found
+LSB_FOUND:BOOL=TRUE
+
+//Path to a program.
+LSB_RELEASE_EXECUTABLE:FILEPATH=/usr/bin/lsb_release
+
+//Path to a program.
+NOSETESTS:FILEPATH=/usr/bin/nosetests-2.7
 
 //Path to a file.
 OPENNI2_INCLUDE_DIRS:PATH=/usr/include/openni2
@@ -831,6 +913,12 @@ PKG_CONFIG_ARGN:STRING=
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//Path to a program.
+PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python2
+
+//Specify specific Python version to use ('major.minor' or 'major')
+PYTHON_VERSION:STRING=2
+
 //The directory containing a CMake configuration file for Pangolin.
 Pangolin_DIR:PATH=/usr/local/lib/cmake/Pangolin
 
@@ -870,11 +958,150 @@ RSSDK_LIBRARY:FILEPATH=RSSDK_LIBRARY-NOTFOUND
 //Path to a library.
 RSSDK_LIBRARY_DEBUG:FILEPATH=RSSDK_LIBRARY_DEBUG-NOTFOUND
 
+//Path to a library.
+RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
+
+//Enable debian style python package layout
+SETUPTOOLS_DEB_LAYOUT:BOOL=ON
+
+//Name of the computer/site where compile is being run
+SITE:STRING=zhjd
+
+//LSB Distrib tag
+UBUNTU:BOOL=TRUE
+
+//LSB Distrib - codename tag
+UBUNTU_BIONIC:BOOL=TRUE
+
 //The directory containing VTKConfig.cmake
 VTK_DIR:PATH=/usr/lib/cmake/vtk-6.3
 
+//Path to a file.
+_gmock_INCLUDES:FILEPATH=/usr/include/gmock/gmock.h
+
+//Path to a file.
+_gmock_SOURCES:FILEPATH=/usr/src/gmock/src/gmock.cc
+
+//Path to a file.
+_gtest_INCLUDES:FILEPATH=/usr/include/gtest/gtest.h
+
+//Path to a file.
+_gtest_SOURCES:FILEPATH=/usr/src/gtest/src/gtest.cc
+
+//The directory containing a CMake configuration file for actionlib_msgs.
+actionlib_msgs_DIR:PATH=/opt/ros/melodic/share/actionlib_msgs/cmake
+
 //The directory containing a CMake configuration file for catkin.
-catkin_DIR:PATH=catkin_DIR-NOTFOUND
+catkin_DIR:PATH=/opt/ros/melodic/share/catkin/cmake
+
+//The directory containing a CMake configuration file for class_loader.
+class_loader_DIR:PATH=/opt/ros/melodic/share/class_loader/cmake
+
+//The directory containing a CMake configuration file for cpp_common.
+cpp_common_DIR:PATH=/opt/ros/melodic/share/cpp_common/cmake
+
+//The directory containing a CMake configuration file for cv_bridge.
+cv_bridge_DIR:PATH=/opt/ros/melodic/share/cv_bridge/cmake
+
+//The directory containing a CMake configuration file for darknet_ros_msgs.
+darknet_ros_msgs_DIR:PATH=/home/zhjd/ws_active/devel/share/darknet_ros_msgs/cmake
+
+//The directory containing a CMake configuration file for gencpp.
+gencpp_DIR:PATH=/opt/ros/melodic/share/gencpp/cmake
+
+//The directory containing a CMake configuration file for geneus.
+geneus_DIR:PATH=/opt/ros/melodic/share/geneus/cmake
+
+//The directory containing a CMake configuration file for genlisp.
+genlisp_DIR:PATH=/opt/ros/melodic/share/genlisp/cmake
+
+//The directory containing a CMake configuration file for genmsg.
+genmsg_DIR:PATH=/opt/ros/melodic/share/genmsg/cmake
+
+//The directory containing a CMake configuration file for gennodejs.
+gennodejs_DIR:PATH=/opt/ros/melodic/share/gennodejs/cmake
+
+//The directory containing a CMake configuration file for genpy.
+genpy_DIR:PATH=/opt/ros/melodic/share/genpy/cmake
+
+//The directory containing a CMake configuration file for geometry_msgs.
+geometry_msgs_DIR:PATH=/opt/ros/melodic/share/geometry_msgs/cmake
+
+//Value Computed by CMake
+gmock_BINARY_DIR:STATIC=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/gtest/googlemock
+
+//Value Computed by CMake
+gmock_IS_TOP_LEVEL:STATIC=OFF
+
+//Dependencies for the target
+gmock_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libmpfr.so;general;/usr/lib/x86_64-linux-gnu/libgmpxx.so;general;/usr/lib/x86_64-linux-gnu/libgmp.so;general;/usr/lib/x86_64-linux-gnu/libCGAL_Core.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libCGAL.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;
+
+//Value Computed by CMake
+gmock_SOURCE_DIR:STATIC=/usr/src/googletest/googlemock
+
+//Build all of Google Mock's own tests.
+gmock_build_tests:BOOL=OFF
+
+//Dependencies for the target
+gmock_main_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libmpfr.so;general;/usr/lib/x86_64-linux-gnu/libgmpxx.so;general;/usr/lib/x86_64-linux-gnu/libgmp.so;general;/usr/lib/x86_64-linux-gnu/libCGAL_Core.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libCGAL.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;
+
+//Value Computed by CMake
+googletest-distribution_BINARY_DIR:STATIC=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/gtest
+
+//Value Computed by CMake
+googletest-distribution_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+googletest-distribution_SOURCE_DIR:STATIC=/usr/src/googletest
+
+//Value Computed by CMake
+gtest_BINARY_DIR:STATIC=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/gtest/googlemock/gtest
+
+//Value Computed by CMake
+gtest_IS_TOP_LEVEL:STATIC=OFF
+
+//Dependencies for the target
+gtest_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libmpfr.so;general;/usr/lib/x86_64-linux-gnu/libgmpxx.so;general;/usr/lib/x86_64-linux-gnu/libgmp.so;general;/usr/lib/x86_64-linux-gnu/libCGAL_Core.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libCGAL.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;
+
+//Value Computed by CMake
+gtest_SOURCE_DIR:STATIC=/usr/src/googletest/googletest
+
+//Build gtest's sample programs.
+gtest_build_samples:BOOL=OFF
+
+//Build all of gtest's own tests.
+gtest_build_tests:BOOL=OFF
+
+//Disable uses of pthreads in gtest.
+gtest_disable_pthreads:BOOL=OFF
+
+//Use shared (DLL) run-time lib even when Google Test is built
+// as static lib.
+gtest_force_shared_crt:BOOL=OFF
+
+//Build gtest with internal symbols hidden in shared libraries.
+gtest_hide_internal_symbols:BOOL=OFF
+
+//Dependencies for the target
+gtest_main_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libmpfr.so;general;/usr/lib/x86_64-linux-gnu/libgmpxx.so;general;/usr/lib/x86_64-linux-gnu/libgmp.so;general;/usr/lib/x86_64-linux-gnu/libCGAL_Core.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libCGAL.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;gtest;
+
+//The directory containing a CMake configuration file for image_transport.
+image_transport_DIR:PATH=/opt/ros/melodic/share/image_transport/cmake
+
+//Path to a library.
+lib:FILEPATH=/opt/ros/melodic/lib/libmessage_filters.so
+
+//The directory containing a CMake configuration file for message_filters.
+message_filters_DIR:PATH=/opt/ros/melodic/share/message_filters/cmake
+
+//The directory containing a CMake configuration file for message_generation.
+message_generation_DIR:PATH=/opt/ros/melodic/share/message_generation/cmake
+
+//The directory containing a CMake configuration file for message_runtime.
+message_runtime_DIR:PATH=/opt/ros/melodic/share/message_runtime/cmake
+
+//The directory containing a CMake configuration file for nav_msgs.
+nav_msgs_DIR:PATH=/opt/ros/melodic/share/nav_msgs/cmake
 
 //Path to a library.
 pkgcfg_lib_PC_FLANN_flann:FILEPATH=/usr/lib/x86_64-linux-gnu/libflann.so
@@ -888,6 +1115,9 @@ pkgcfg_lib_PC_OPENNI2_OpenNI2:FILEPATH=/usr/lib/libOpenNI2.so
 //Path to a library.
 pkgcfg_lib_PC_OPENNI_OpenNI:FILEPATH=/usr/lib/libOpenNI.so
 
+//The directory containing a CMake configuration file for pluginlib.
+pluginlib_DIR:PATH=/opt/ros/melodic/share/pluginlib/cmake
+
 //Value Computed by CMake
 ros_evo_BINARY_DIR:STATIC=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug
 
@@ -896,6 +1126,63 @@ ros_evo_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 ros_evo_SOURCE_DIR:STATIC=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test
+
+//Dependencies for the target
+ros_evo_lib_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libmpfr.so;general;/usr/lib/x86_64-linux-gnu/libgmpxx.so;general;/usr/lib/x86_64-linux-gnu/libgmp.so;general;/usr/lib/x86_64-linux-gnu/libCGAL_Core.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libCGAL.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/opt/ros/melodic/lib/librosbag.so;general;/opt/ros/melodic/lib/librosbag_storage.so;general;/opt/ros/melodic/lib/libroslz4.so;general;/usr/lib/x86_64-linux-gnu/liblz4.so;general;/opt/ros/melodic/lib/libtopic_tools.so;general;/opt/ros/melodic/lib/libcv_bridge.so;general;/usr/lib/x86_64-linux-gnu/libopencv_core.so.3.2.0;general;/usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.3.2.0;general;/usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.3.2.0;general;/opt/ros/melodic/lib/libimage_transport.so;general;/opt/ros/melodic/lib/libmessage_filters.so;general;/opt/ros/melodic/lib/libclass_loader.so;general;/usr/lib/libPocoFoundation.so;general;/usr/lib/x86_64-linux-gnu/libdl.so;general;/opt/ros/melodic/lib/libroscpp.so;general;/opt/ros/melodic/lib/librosconsole.so;general;/opt/ros/melodic/lib/librosconsole_log4cxx.so;general;/opt/ros/melodic/lib/librosconsole_backend_interface.so;general;/usr/lib/x86_64-linux-gnu/liblog4cxx.so;general;/usr/lib/x86_64-linux-gnu/libboost_regex.so;general;/opt/ros/melodic/lib/libxmlrpcpp.so;general;/opt/ros/melodic/lib/libroslib.so;general;/opt/ros/melodic/lib/librospack.so;general;/usr/lib/x86_64-linux-gnu/libpython2.7.so;general;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;general;/usr/lib/x86_64-linux-gnu/libboost_program_options.so;general;/usr/lib/x86_64-linux-gnu/libtinyxml2.so;general;/opt/ros/melodic/lib/libroscpp_serialization.so;general;/opt/ros/melodic/lib/librostime.so;general;/opt/ros/melodic/lib/libcpp_common.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4;general;opencv_calib3d;general;opencv_core;general;opencv_dnn;general;opencv_features2d;general;opencv_flann;general;opencv_highgui;general;opencv_imgcodecs;general;opencv_imgproc;general;opencv_ml;general;opencv_objdetect;general;opencv_photo;general;opencv_shape;general;opencv_stitching;general;opencv_superres;general;opencv_video;general;opencv_videoio;general;opencv_videostab;general;opencv_viz;general;pangolin;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_iostreams.so;general;/usr/lib/x86_64-linux-gnu/libboost_serialization.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libboost_regex.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_common.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_common.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_octree.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_octree.so;general;/usr/lib/libOpenNI.so;general;/usr/lib/libOpenNI2.so;general;vtkChartsCore;general;vtkCommonColor;general;vtkCommonDataModel;general;vtkCommonMath;general;vtkCommonCore;general;vtksys;general;vtkCommonMisc;general;vtkCommonSystem;general;vtkCommonTransforms;general;vtkInfovisCore;general;vtkFiltersExtraction;general;vtkCommonExecutionModel;general;vtkFiltersCore;general;vtkFiltersGeneral;general;vtkCommonComputationalGeometry;general;vtkFiltersStatistics;general;vtkImagingFourier;general;vtkImagingCore;general;vtkalglib;general;vtkRenderingContext2D;general;vtkRenderingCore;general;vtkFiltersGeometry;general;vtkFiltersSources;general;vtkRenderingFreeType;general;/usr/lib/x86_64-linux-gnu/libfreetype.so;general;/usr/lib/x86_64-linux-gnu/libz.so;general;vtkftgl;general;vtkDICOMParser;general;vtkDomainsChemistry;general;vtkIOXML;general;vtkIOGeometry;general;vtkIOCore;general;vtkIOXMLParser;general;/usr/lib/x86_64-linux-gnu/libexpat.so;general;vtkFiltersAMR;general;vtkParallelCore;general;vtkIOLegacy;general;vtkFiltersFlowPaths;general;vtkFiltersGeneric;general;vtkFiltersHybrid;general;vtkImagingSources;general;vtkFiltersHyperTree;general;vtkFiltersImaging;general;vtkImagingGeneral;general;vtkFiltersModeling;general;vtkFiltersParallel;general;vtkFiltersParallelFlowPaths;general;vtkParallelMPI;general;vtkFiltersParallelGeometry;general;vtkFiltersParallelImaging;general;vtkFiltersParallelMPI;general;vtkFiltersParallelStatistics;general;vtkFiltersProgrammable;general;vtkFiltersPython;general;/usr/lib/x86_64-linux-gnu/libpython2.7.so;general;vtkWrappingPythonCore;general;vtkWrappingTools;general;vtkFiltersReebGraph;general;vtkFiltersSMP;general;vtkFiltersSelection;general;vtkFiltersTexture;general;vtkFiltersVerdict;general;verdict;general;vtkGUISupportQt;general;vtkInteractionStyle;general;vtkRenderingOpenGL;general;vtkImagingHybrid;general;vtkIOImage;general;vtkmetaio;general;/usr/lib/x86_64-linux-gnu/libjpeg.so;general;/usr/lib/x86_64-linux-gnu/libpng.so;general;/usr/lib/x86_64-linux-gnu/libtiff.so;general;vtkGUISupportQtOpenGL;general;vtkGUISupportQtSQL;general;vtkIOSQL;general;sqlite3;general;vtkGUISupportQtWebkit;general;vtkViewsQt;general;vtkViewsInfovis;general;vtkInfovisLayout;general;vtkInfovisBoostGraphAlgorithms;general;vtkRenderingLabel;general;vtkViewsCore;general;vtkInteractionWidgets;general;vtkRenderingAnnotation;general;vtkImagingColor;general;vtkRenderingVolume;general;vtkGeovisCore;general;/usr/lib/x86_64-linux-gnu/libproj.so;general;vtkIOAMR;general;/usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so;general;/usr/lib/x86_64-linux-gnu/libsz.so;general;/usr/lib/x86_64-linux-gnu/libdl.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so;general;vtkIOEnSight;general;vtkIOExodus;general;vtkexoIIc;general;/usr/lib/x86_64-linux-gnu/libnetcdf_c++.so;general;/usr/lib/x86_64-linux-gnu/libnetcdf.so;general;vtkIOExport;general;vtkRenderingGL2PS;general;vtkRenderingContextOpenGL;general;/usr/lib/x86_64-linux-gnu/libgl2ps.so;general;vtkIOFFMPEG;general;vtkIOMovie;general;/usr/lib/x86_64-linux-gnu/libtheoraenc.so;general;/usr/lib/x86_64-linux-gnu/libtheoradec.so;general;/usr/lib/x86_64-linux-gnu/libogg.so;general;vtkIOGDAL;general;vtkIOGeoJSON;general;vtkIOImport;general;vtkIOInfovis;general;/usr/lib/x86_64-linux-gnu/libxml2.so;general;vtkIOLSDyna;general;vtkIOMINC;general;vtkIOMPIImage;general;vtkIOMPIParallel;general;vtkIOParallel;general;vtkIONetCDF;general;/usr/lib/x86_64-linux-gnu/libjsoncpp.so;general;vtkIOMySQL;general;vtkIOODBC;general;vtkIOPLY;general;vtkIOParallelExodus;general;vtkIOParallelLSDyna;general;vtkIOParallelNetCDF;general;vtkIOParallelXML;general;vtkIOPostgreSQL;general;vtkIOVPIC;general;VPIC;general;vtkIOVideo;general;vtkIOXdmf2;general;vtkxdmf2;general;vtkImagingMath;general;vtkImagingMorphological;general;vtkImagingStatistics;general;vtkImagingStencil;general;vtkInteractionImage;general;vtkLocalExample;general;vtkParallelMPI4Py;general;vtkPythonInterpreter;general;vtkRenderingExternal;general;vtkRenderingFreeTypeFontConfig;general;vtkRenderingImage;general;vtkRenderingLIC;general;vtkRenderingLOD;general;vtkRenderingMatplotlib;general;vtkRenderingParallel;general;vtkRenderingParallelLIC;general;vtkRenderingQt;general;vtkRenderingVolumeAMR;general;vtkRenderingVolumeOpenGL;general;vtkTestingGenericBridge;general;vtkTestingIOSQL;general;vtkTestingRendering;general;vtkViewsContext2D;general;vtkViewsGeovis;general;vtkWrappingJava;optimized;/usr/lib/x86_64-linux-gnu/libpcl_io.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_io.so;optimized;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;debug;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;optimized;/usr/lib/x86_64-linux-gnu/libpcl_kdtree.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_kdtree.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_search.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_search.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_filters.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_filters.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_features.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_features.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_ml.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_ml.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_segmentation.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_segmentation.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_visualization.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_visualization.so;optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_surface.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_surface.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_registration.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_registration.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_keypoints.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_keypoints.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_tracking.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_tracking.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_recognition.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_recognition.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_stereo.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_stereo.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_apps.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_apps.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_outofcore.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_outofcore.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_people.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_people.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_iostreams.so;general;/usr/lib/x86_64-linux-gnu/libboost_serialization.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libboost_regex.so;optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so;general;/usr/lib/libOpenNI.so;general;/usr/lib/libOpenNI2.so;optimized;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;debug;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;general;vtkChartsCore;general;vtkCommonColor;general;vtkCommonDataModel;general;vtkCommonMath;general;vtkCommonCore;general;vtksys;general;vtkCommonMisc;general;vtkCommonSystem;general;vtkCommonTransforms;general;vtkInfovisCore;general;vtkFiltersExtraction;general;vtkCommonExecutionModel;general;vtkFiltersCore;general;vtkFiltersGeneral;general;vtkCommonComputationalGeometry;general;vtkFiltersStatistics;general;vtkImagingFourier;general;vtkImagingCore;general;vtkalglib;general;vtkRenderingContext2D;general;vtkRenderingCore;general;vtkFiltersGeometry;general;vtkFiltersSources;general;vtkRenderingFreeType;general;/usr/lib/x86_64-linux-gnu/libfreetype.so;general;/usr/lib/x86_64-linux-gnu/libz.so;general;vtkftgl;general;vtkDICOMParser;general;vtkDomainsChemistry;general;vtkIOXML;general;vtkIOGeometry;general;vtkIOCore;general;vtkIOXMLParser;general;/usr/lib/x86_64-linux-gnu/libexpat.so;general;vtkFiltersAMR;general;vtkParallelCore;general;vtkIOLegacy;general;vtkFiltersFlowPaths;general;vtkFiltersGeneric;general;vtkFiltersHybrid;general;vtkImagingSources;general;vtkFiltersHyperTree;general;vtkFiltersImaging;general;vtkImagingGeneral;general;vtkFiltersModeling;general;vtkFiltersParallel;general;vtkFiltersParallelFlowPaths;general;vtkParallelMPI;general;vtkFiltersParallelGeometry;general;vtkFiltersParallelImaging;general;vtkFiltersParallelMPI;general;vtkFiltersParallelStatistics;general;vtkFiltersProgrammable;general;vtkFiltersPython;general;/usr/lib/x86_64-linux-gnu/libpython2.7.so;general;vtkWrappingPythonCore;general;vtkWrappingTools;general;vtkFiltersReebGraph;general;vtkFiltersSMP;general;vtkFiltersSelection;general;vtkFiltersTexture;general;vtkFiltersVerdict;general;verdict;general;vtkGUISupportQt;general;vtkInteractionStyle;general;vtkRenderingOpenGL;general;vtkImagingHybrid;general;vtkIOImage;general;vtkmetaio;general;/usr/lib/x86_64-linux-gnu/libjpeg.so;general;/usr/lib/x86_64-linux-gnu/libpng.so;general;/usr/lib/x86_64-linux-gnu/libtiff.so;general;vtkGUISupportQtOpenGL;general;vtkGUISupportQtSQL;general;vtkIOSQL;general;sqlite3;general;vtkGUISupportQtWebkit;general;vtkViewsQt;general;vtkViewsInfovis;general;vtkInfovisLayout;general;vtkInfovisBoostGraphAlgorithms;general;vtkRenderingLabel;general;vtkViewsCore;general;vtkInteractionWidgets;general;vtkRenderingAnnotation;general;vtkImagingColor;general;vtkRenderingVolume;general;vtkGeovisCore;general;/usr/lib/x86_64-linux-gnu/libproj.so;general;vtkIOAMR;general;/usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so;general;/usr/lib/x86_64-linux-gnu/libsz.so;general;/usr/lib/x86_64-linux-gnu/libdl.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so;general;vtkIOEnSight;general;vtkIOExodus;general;vtkexoIIc;general;/usr/lib/x86_64-linux-gnu/libnetcdf_c++.so;general;/usr/lib/x86_64-linux-gnu/libnetcdf.so;general;vtkIOExport;general;vtkRenderingGL2PS;general;vtkRenderingContextOpenGL;general;/usr/lib/x86_64-linux-gnu/libgl2ps.so;general;vtkIOFFMPEG;general;vtkIOMovie;general;/usr/lib/x86_64-linux-gnu/libtheoraenc.so;general;/usr/lib/x86_64-linux-gnu/libtheoradec.so;general;/usr/lib/x86_64-linux-gnu/libogg.so;general;vtkIOGDAL;general;vtkIOGeoJSON;general;vtkIOImport;general;vtkIOInfovis;general;/usr/lib/x86_64-linux-gnu/libxml2.so;general;vtkIOLSDyna;general;vtkIOMINC;general;vtkIOMPIImage;general;vtkIOMPIParallel;general;vtkIOParallel;general;vtkIONetCDF;general;/usr/lib/x86_64-linux-gnu/libjsoncpp.so;general;vtkIOMySQL;general;vtkIOODBC;general;vtkIOPLY;general;vtkIOParallelExodus;general;vtkIOParallelLSDyna;general;vtkIOParallelNetCDF;general;vtkIOParallelXML;general;vtkIOPostgreSQL;general;vtkIOVPIC;general;VPIC;general;vtkIOVideo;general;vtkIOXdmf2;general;vtkxdmf2;general;vtkImagingMath;general;vtkImagingMorphological;general;vtkImagingStatistics;general;vtkImagingStencil;general;vtkInteractionImage;general;vtkLocalExample;general;vtkParallelMPI4Py;general;vtkPythonInterpreter;general;vtkRenderingExternal;general;vtkRenderingFreeTypeFontConfig;general;vtkRenderingImage;general;vtkRenderingLIC;general;vtkRenderingLOD;general;vtkRenderingMatplotlib;general;vtkRenderingParallel;general;vtkRenderingParallelLIC;general;vtkRenderingQt;general;vtkRenderingVolumeAMR;general;vtkRenderingVolumeOpenGL;general;vtkTestingGenericBridge;general;vtkTestingIOSQL;general;vtkTestingRendering;general;vtkViewsContext2D;general;vtkViewsGeovis;general;vtkWrappingJava;general;/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/../Thirdparty/DBoW2/lib/libDBoW2.so;general;/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/../Thirdparty/g2o/lib/libg2o.so;general;boost_system;general;boost_filesystem;general;boost_serialization;general;lapack;general;blas;
+
+//Dependencies for the target
+ros_evo_noros_lib_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libmpfr.so;general;/usr/lib/x86_64-linux-gnu/libgmpxx.so;general;/usr/lib/x86_64-linux-gnu/libgmp.so;general;/usr/lib/x86_64-linux-gnu/libCGAL_Core.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libCGAL.so.13.0.1;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/opt/ros/melodic/lib/librosbag.so;general;/opt/ros/melodic/lib/librosbag_storage.so;general;/opt/ros/melodic/lib/libroslz4.so;general;/usr/lib/x86_64-linux-gnu/liblz4.so;general;/opt/ros/melodic/lib/libtopic_tools.so;general;/opt/ros/melodic/lib/libcv_bridge.so;general;/usr/lib/x86_64-linux-gnu/libopencv_core.so.3.2.0;general;/usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.3.2.0;general;/usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.3.2.0;general;/opt/ros/melodic/lib/libimage_transport.so;general;/opt/ros/melodic/lib/libmessage_filters.so;general;/opt/ros/melodic/lib/libclass_loader.so;general;/usr/lib/libPocoFoundation.so;general;/usr/lib/x86_64-linux-gnu/libdl.so;general;/opt/ros/melodic/lib/libroscpp.so;general;/opt/ros/melodic/lib/librosconsole.so;general;/opt/ros/melodic/lib/librosconsole_log4cxx.so;general;/opt/ros/melodic/lib/librosconsole_backend_interface.so;general;/usr/lib/x86_64-linux-gnu/liblog4cxx.so;general;/usr/lib/x86_64-linux-gnu/libboost_regex.so;general;/opt/ros/melodic/lib/libxmlrpcpp.so;general;/opt/ros/melodic/lib/libroslib.so;general;/opt/ros/melodic/lib/librospack.so;general;/usr/lib/x86_64-linux-gnu/libpython2.7.so;general;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;general;/usr/lib/x86_64-linux-gnu/libboost_program_options.so;general;/usr/lib/x86_64-linux-gnu/libtinyxml2.so;general;/opt/ros/melodic/lib/libroscpp_serialization.so;general;/opt/ros/melodic/lib/librostime.so;general;/opt/ros/melodic/lib/libcpp_common.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libpthread.so;general;/usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4;general;opencv_calib3d;general;opencv_core;general;opencv_dnn;general;opencv_features2d;general;opencv_flann;general;opencv_highgui;general;opencv_imgcodecs;general;opencv_imgproc;general;opencv_ml;general;opencv_objdetect;general;opencv_photo;general;opencv_shape;general;opencv_stitching;general;opencv_superres;general;opencv_video;general;opencv_videoio;general;opencv_videostab;general;opencv_viz;general;pangolin;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_iostreams.so;general;/usr/lib/x86_64-linux-gnu/libboost_serialization.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libboost_regex.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_common.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_common.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_octree.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_octree.so;general;/usr/lib/libOpenNI.so;general;/usr/lib/libOpenNI2.so;general;vtkChartsCore;general;vtkCommonColor;general;vtkCommonDataModel;general;vtkCommonMath;general;vtkCommonCore;general;vtksys;general;vtkCommonMisc;general;vtkCommonSystem;general;vtkCommonTransforms;general;vtkInfovisCore;general;vtkFiltersExtraction;general;vtkCommonExecutionModel;general;vtkFiltersCore;general;vtkFiltersGeneral;general;vtkCommonComputationalGeometry;general;vtkFiltersStatistics;general;vtkImagingFourier;general;vtkImagingCore;general;vtkalglib;general;vtkRenderingContext2D;general;vtkRenderingCore;general;vtkFiltersGeometry;general;vtkFiltersSources;general;vtkRenderingFreeType;general;/usr/lib/x86_64-linux-gnu/libfreetype.so;general;/usr/lib/x86_64-linux-gnu/libz.so;general;vtkftgl;general;vtkDICOMParser;general;vtkDomainsChemistry;general;vtkIOXML;general;vtkIOGeometry;general;vtkIOCore;general;vtkIOXMLParser;general;/usr/lib/x86_64-linux-gnu/libexpat.so;general;vtkFiltersAMR;general;vtkParallelCore;general;vtkIOLegacy;general;vtkFiltersFlowPaths;general;vtkFiltersGeneric;general;vtkFiltersHybrid;general;vtkImagingSources;general;vtkFiltersHyperTree;general;vtkFiltersImaging;general;vtkImagingGeneral;general;vtkFiltersModeling;general;vtkFiltersParallel;general;vtkFiltersParallelFlowPaths;general;vtkParallelMPI;general;vtkFiltersParallelGeometry;general;vtkFiltersParallelImaging;general;vtkFiltersParallelMPI;general;vtkFiltersParallelStatistics;general;vtkFiltersProgrammable;general;vtkFiltersPython;general;/usr/lib/x86_64-linux-gnu/libpython2.7.so;general;vtkWrappingPythonCore;general;vtkWrappingTools;general;vtkFiltersReebGraph;general;vtkFiltersSMP;general;vtkFiltersSelection;general;vtkFiltersTexture;general;vtkFiltersVerdict;general;verdict;general;vtkGUISupportQt;general;vtkInteractionStyle;general;vtkRenderingOpenGL;general;vtkImagingHybrid;general;vtkIOImage;general;vtkmetaio;general;/usr/lib/x86_64-linux-gnu/libjpeg.so;general;/usr/lib/x86_64-linux-gnu/libpng.so;general;/usr/lib/x86_64-linux-gnu/libtiff.so;general;vtkGUISupportQtOpenGL;general;vtkGUISupportQtSQL;general;vtkIOSQL;general;sqlite3;general;vtkGUISupportQtWebkit;general;vtkViewsQt;general;vtkViewsInfovis;general;vtkInfovisLayout;general;vtkInfovisBoostGraphAlgorithms;general;vtkRenderingLabel;general;vtkViewsCore;general;vtkInteractionWidgets;general;vtkRenderingAnnotation;general;vtkImagingColor;general;vtkRenderingVolume;general;vtkGeovisCore;general;/usr/lib/x86_64-linux-gnu/libproj.so;general;vtkIOAMR;general;/usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so;general;/usr/lib/x86_64-linux-gnu/libsz.so;general;/usr/lib/x86_64-linux-gnu/libdl.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so;general;vtkIOEnSight;general;vtkIOExodus;general;vtkexoIIc;general;/usr/lib/x86_64-linux-gnu/libnetcdf_c++.so;general;/usr/lib/x86_64-linux-gnu/libnetcdf.so;general;vtkIOExport;general;vtkRenderingGL2PS;general;vtkRenderingContextOpenGL;general;/usr/lib/x86_64-linux-gnu/libgl2ps.so;general;vtkIOFFMPEG;general;vtkIOMovie;general;/usr/lib/x86_64-linux-gnu/libtheoraenc.so;general;/usr/lib/x86_64-linux-gnu/libtheoradec.so;general;/usr/lib/x86_64-linux-gnu/libogg.so;general;vtkIOGDAL;general;vtkIOGeoJSON;general;vtkIOImport;general;vtkIOInfovis;general;/usr/lib/x86_64-linux-gnu/libxml2.so;general;vtkIOLSDyna;general;vtkIOMINC;general;vtkIOMPIImage;general;vtkIOMPIParallel;general;vtkIOParallel;general;vtkIONetCDF;general;/usr/lib/x86_64-linux-gnu/libjsoncpp.so;general;vtkIOMySQL;general;vtkIOODBC;general;vtkIOPLY;general;vtkIOParallelExodus;general;vtkIOParallelLSDyna;general;vtkIOParallelNetCDF;general;vtkIOParallelXML;general;vtkIOPostgreSQL;general;vtkIOVPIC;general;VPIC;general;vtkIOVideo;general;vtkIOXdmf2;general;vtkxdmf2;general;vtkImagingMath;general;vtkImagingMorphological;general;vtkImagingStatistics;general;vtkImagingStencil;general;vtkInteractionImage;general;vtkLocalExample;general;vtkParallelMPI4Py;general;vtkPythonInterpreter;general;vtkRenderingExternal;general;vtkRenderingFreeTypeFontConfig;general;vtkRenderingImage;general;vtkRenderingLIC;general;vtkRenderingLOD;general;vtkRenderingMatplotlib;general;vtkRenderingParallel;general;vtkRenderingParallelLIC;general;vtkRenderingQt;general;vtkRenderingVolumeAMR;general;vtkRenderingVolumeOpenGL;general;vtkTestingGenericBridge;general;vtkTestingIOSQL;general;vtkTestingRendering;general;vtkViewsContext2D;general;vtkViewsGeovis;general;vtkWrappingJava;optimized;/usr/lib/x86_64-linux-gnu/libpcl_io.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_io.so;optimized;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;debug;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;optimized;/usr/lib/x86_64-linux-gnu/libpcl_kdtree.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_kdtree.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_search.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_search.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_filters.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_filters.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_features.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_features.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_ml.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_ml.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_segmentation.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_segmentation.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_visualization.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_visualization.so;optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_surface.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_surface.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_registration.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_registration.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_keypoints.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_keypoints.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_tracking.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_tracking.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_recognition.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_recognition.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_stereo.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_stereo.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_apps.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_apps.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_outofcore.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_outofcore.so;optimized;/usr/lib/x86_64-linux-gnu/libpcl_people.so;debug;/usr/lib/x86_64-linux-gnu/libpcl_people.so;general;/usr/lib/x86_64-linux-gnu/libboost_system.so;general;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;general;/usr/lib/x86_64-linux-gnu/libboost_thread.so;general;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;general;/usr/lib/x86_64-linux-gnu/libboost_iostreams.so;general;/usr/lib/x86_64-linux-gnu/libboost_serialization.so;general;/usr/lib/x86_64-linux-gnu/libboost_chrono.so;general;/usr/lib/x86_64-linux-gnu/libboost_atomic.so;general;/usr/lib/x86_64-linux-gnu/libboost_regex.so;optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so;general;/usr/lib/libOpenNI.so;general;/usr/lib/libOpenNI2.so;optimized;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;debug;/usr/lib/x86_64-linux-gnu/libflann_cpp_s.a;general;vtkChartsCore;general;vtkCommonColor;general;vtkCommonDataModel;general;vtkCommonMath;general;vtkCommonCore;general;vtksys;general;vtkCommonMisc;general;vtkCommonSystem;general;vtkCommonTransforms;general;vtkInfovisCore;general;vtkFiltersExtraction;general;vtkCommonExecutionModel;general;vtkFiltersCore;general;vtkFiltersGeneral;general;vtkCommonComputationalGeometry;general;vtkFiltersStatistics;general;vtkImagingFourier;general;vtkImagingCore;general;vtkalglib;general;vtkRenderingContext2D;general;vtkRenderingCore;general;vtkFiltersGeometry;general;vtkFiltersSources;general;vtkRenderingFreeType;general;/usr/lib/x86_64-linux-gnu/libfreetype.so;general;/usr/lib/x86_64-linux-gnu/libz.so;general;vtkftgl;general;vtkDICOMParser;general;vtkDomainsChemistry;general;vtkIOXML;general;vtkIOGeometry;general;vtkIOCore;general;vtkIOXMLParser;general;/usr/lib/x86_64-linux-gnu/libexpat.so;general;vtkFiltersAMR;general;vtkParallelCore;general;vtkIOLegacy;general;vtkFiltersFlowPaths;general;vtkFiltersGeneric;general;vtkFiltersHybrid;general;vtkImagingSources;general;vtkFiltersHyperTree;general;vtkFiltersImaging;general;vtkImagingGeneral;general;vtkFiltersModeling;general;vtkFiltersParallel;general;vtkFiltersParallelFlowPaths;general;vtkParallelMPI;general;vtkFiltersParallelGeometry;general;vtkFiltersParallelImaging;general;vtkFiltersParallelMPI;general;vtkFiltersParallelStatistics;general;vtkFiltersProgrammable;general;vtkFiltersPython;general;/usr/lib/x86_64-linux-gnu/libpython2.7.so;general;vtkWrappingPythonCore;general;vtkWrappingTools;general;vtkFiltersReebGraph;general;vtkFiltersSMP;general;vtkFiltersSelection;general;vtkFiltersTexture;general;vtkFiltersVerdict;general;verdict;general;vtkGUISupportQt;general;vtkInteractionStyle;general;vtkRenderingOpenGL;general;vtkImagingHybrid;general;vtkIOImage;general;vtkmetaio;general;/usr/lib/x86_64-linux-gnu/libjpeg.so;general;/usr/lib/x86_64-linux-gnu/libpng.so;general;/usr/lib/x86_64-linux-gnu/libtiff.so;general;vtkGUISupportQtOpenGL;general;vtkGUISupportQtSQL;general;vtkIOSQL;general;sqlite3;general;vtkGUISupportQtWebkit;general;vtkViewsQt;general;vtkViewsInfovis;general;vtkInfovisLayout;general;vtkInfovisBoostGraphAlgorithms;general;vtkRenderingLabel;general;vtkViewsCore;general;vtkInteractionWidgets;general;vtkRenderingAnnotation;general;vtkImagingColor;general;vtkRenderingVolume;general;vtkGeovisCore;general;/usr/lib/x86_64-linux-gnu/libproj.so;general;vtkIOAMR;general;/usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so;general;/usr/lib/x86_64-linux-gnu/libsz.so;general;/usr/lib/x86_64-linux-gnu/libdl.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so;general;vtkIOEnSight;general;vtkIOExodus;general;vtkexoIIc;general;/usr/lib/x86_64-linux-gnu/libnetcdf_c++.so;general;/usr/lib/x86_64-linux-gnu/libnetcdf.so;general;vtkIOExport;general;vtkRenderingGL2PS;general;vtkRenderingContextOpenGL;general;/usr/lib/x86_64-linux-gnu/libgl2ps.so;general;vtkIOFFMPEG;general;vtkIOMovie;general;/usr/lib/x86_64-linux-gnu/libtheoraenc.so;general;/usr/lib/x86_64-linux-gnu/libtheoradec.so;general;/usr/lib/x86_64-linux-gnu/libogg.so;general;vtkIOGDAL;general;vtkIOGeoJSON;general;vtkIOImport;general;vtkIOInfovis;general;/usr/lib/x86_64-linux-gnu/libxml2.so;general;vtkIOLSDyna;general;vtkIOMINC;general;vtkIOMPIImage;general;vtkIOMPIParallel;general;vtkIOParallel;general;vtkIONetCDF;general;/usr/lib/x86_64-linux-gnu/libjsoncpp.so;general;vtkIOMySQL;general;vtkIOODBC;general;vtkIOPLY;general;vtkIOParallelExodus;general;vtkIOParallelLSDyna;general;vtkIOParallelNetCDF;general;vtkIOParallelXML;general;vtkIOPostgreSQL;general;vtkIOVPIC;general;VPIC;general;vtkIOVideo;general;vtkIOXdmf2;general;vtkxdmf2;general;vtkImagingMath;general;vtkImagingMorphological;general;vtkImagingStatistics;general;vtkImagingStencil;general;vtkInteractionImage;general;vtkLocalExample;general;vtkParallelMPI4Py;general;vtkPythonInterpreter;general;vtkRenderingExternal;general;vtkRenderingFreeTypeFontConfig;general;vtkRenderingImage;general;vtkRenderingLIC;general;vtkRenderingLOD;general;vtkRenderingMatplotlib;general;vtkRenderingParallel;general;vtkRenderingParallelLIC;general;vtkRenderingQt;general;vtkRenderingVolumeAMR;general;vtkRenderingVolumeOpenGL;general;vtkTestingGenericBridge;general;vtkTestingIOSQL;general;vtkTestingRendering;general;vtkViewsContext2D;general;vtkViewsGeovis;general;vtkWrappingJava;general;/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/../Thirdparty/DBoW2/lib/libDBoW2.so;general;/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/../Thirdparty/g2o/lib/libg2o.so;general;boost_system;general;boost_filesystem;general;boost_serialization;general;lapack;general;blas;
+
+//The directory containing a CMake configuration file for rosbag.
+rosbag_DIR:PATH=/opt/ros/melodic/share/rosbag/cmake
+
+//The directory containing a CMake configuration file for rosbag_storage.
+rosbag_storage_DIR:PATH=/opt/ros/melodic/share/rosbag_storage/cmake
+
+//The directory containing a CMake configuration file for rosconsole.
+rosconsole_DIR:PATH=/opt/ros/melodic/share/rosconsole/cmake
+
+//The directory containing a CMake configuration file for roscpp.
+roscpp_DIR:PATH=/opt/ros/melodic/share/roscpp/cmake
+
+//The directory containing a CMake configuration file for roscpp_serialization.
+roscpp_serialization_DIR:PATH=/opt/ros/melodic/share/roscpp_serialization/cmake
+
+//The directory containing a CMake configuration file for roscpp_traits.
+roscpp_traits_DIR:PATH=/opt/ros/melodic/share/roscpp_traits/cmake
+
+//The directory containing a CMake configuration file for rosgraph_msgs.
+rosgraph_msgs_DIR:PATH=/opt/ros/melodic/share/rosgraph_msgs/cmake
+
+//The directory containing a CMake configuration file for roslib.
+roslib_DIR:PATH=/opt/ros/melodic/share/roslib/cmake
+
+//The directory containing a CMake configuration file for roslz4.
+roslz4_DIR:PATH=/opt/ros/melodic/share/roslz4/cmake
+
+//The directory containing a CMake configuration file for rospack.
+rospack_DIR:PATH=/opt/ros/melodic/share/rospack/cmake
+
+//The directory containing a CMake configuration file for rospy.
+rospy_DIR:PATH=/opt/ros/melodic/share/rospy/cmake
+
+//The directory containing a CMake configuration file for rostime.
+rostime_DIR:PATH=/opt/ros/melodic/share/rostime/cmake
+
+//The directory containing a CMake configuration file for sensor_msgs.
+sensor_msgs_DIR:PATH=/opt/ros/melodic/share/sensor_msgs/cmake
+
+//The directory containing a CMake configuration file for std_msgs.
+std_msgs_DIR:PATH=/opt/ros/melodic/share/std_msgs/cmake
+
+//The directory containing a CMake configuration file for std_srvs.
+std_srvs_DIR:PATH=/opt/ros/melodic/share/std_srvs/cmake
+
+//The directory containing a CMake configuration file for topic_tools.
+topic_tools_DIR:PATH=/opt/ros/melodic/share/topic_tools/cmake
+
+//The directory containing a CMake configuration file for xmlrpcpp.
+xmlrpcpp_DIR:PATH=/opt/ros/melodic/share/xmlrpcpp/cmake
 
 
 ########################
@@ -986,6 +1273,9 @@ Boost_SYSTEM_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 Boost_THREAD_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_THREAD_LIBRARY_RELEASE
 Boost_THREAD_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//catkin environment
+CATKIN_ENV:INTERNAL=
+CATKIN_TEST_RESULTS_DIR:INTERNAL=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/test_results
 //ADVANCED property for variable: CGAL_Boost_USE_STATIC_LIBS
 CGAL_Boost_USE_STATIC_LIBS-ADVANCED:INTERNAL=1
 //Directory containing the GraphicsView package
@@ -1102,7 +1392,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1316,6 +1606,8 @@ FIND_PACKAGE_MESSAGE_DETAILS_PCL_SURFACE:INTERNAL=[/usr/lib/x86_64-linux-gnu/lib
 FIND_PACKAGE_MESSAGE_DETAILS_PCL_TRACKING:INTERNAL=[/usr/lib/x86_64-linux-gnu/libpcl_tracking.so][/usr/include/pcl-1.8][v()]
 //Details about finding PCL_VISUALIZATION
 FIND_PACKAGE_MESSAGE_DETAILS_PCL_VISUALIZATION:INTERNAL=[/usr/lib/x86_64-linux-gnu/libpcl_visualization.so][/usr/include/pcl-1.8][v()]
+//Details about finding PythonInterp
+FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python2][v2.7.17()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding eigen
@@ -1326,6 +1618,34 @@ FIND_PACKAGE_MESSAGE_DETAILS_libusb-1.0:INTERNAL=[/usr/include][v()]
 FIND_PACKAGE_MESSAGE_DETAILS_openni:INTERNAL=[/usr/lib/libOpenNI.so][/usr/include/ni][v()]
 //Details about finding qhull
 FIND_PACKAGE_MESSAGE_DETAILS_qhull:INTERNAL=[/usr/lib/x86_64-linux-gnu/libqhull.so][/usr/include][v()]
+GMOCK_FROM_SOURCE_FOUND:INTERNAL=TRUE
+GMOCK_FROM_SOURCE_INCLUDE_DIRS:INTERNAL=/usr/include
+GMOCK_FROM_SOURCE_LIBRARIES:INTERNAL=gmock
+GMOCK_FROM_SOURCE_LIBRARY_DIRS:INTERNAL=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/gmock
+GMOCK_FROM_SOURCE_MAIN_LIBRARIES:INTERNAL=gmock_main
+//ADVANCED property for variable: GMOCK_LIBRARY
+GMOCK_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GMOCK_LIBRARY_DEBUG
+GMOCK_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GMOCK_MAIN_LIBRARY
+GMOCK_MAIN_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GMOCK_MAIN_LIBRARY_DEBUG
+GMOCK_MAIN_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+GTEST_FROM_SOURCE_FOUND:INTERNAL=TRUE
+GTEST_FROM_SOURCE_INCLUDE_DIRS:INTERNAL=/usr/include
+GTEST_FROM_SOURCE_LIBRARIES:INTERNAL=gtest
+GTEST_FROM_SOURCE_LIBRARY_DIRS:INTERNAL=/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/cmake-build-debug/gtest
+GTEST_FROM_SOURCE_MAIN_LIBRARIES:INTERNAL=gtest_main
+//ADVANCED property for variable: GTEST_INCLUDE_DIR
+GTEST_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_LIBRARY
+GTEST_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_LIBRARY_DEBUG
+GTEST_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_MAIN_LIBRARY
+GTEST_MAIN_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: GTEST_MAIN_LIBRARY_DEBUG
+GTEST_MAIN_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: LAPACK_Accelerate_LIBRARY
 LAPACK_Accelerate_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: LAPACK_acml_LIBRARY
@@ -1588,6 +1908,12 @@ PC_OPENNI_libopenni_VERSION:INTERNAL=
 PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PYTHON_EXECUTABLE
+PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
+//This needs to be in PYTHONPATH when 'setup.py install' is called.
+//  And it needs to match.  But setuptools won't tell us where
+// it will install things.
+PYTHON_INSTALL_DIR:INTERNAL=lib/python2.7/dist-packages
 //ADVANCED property for variable: ProcessorCount_cmd_nproc
 ProcessorCount_cmd_nproc-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ProcessorCount_cmd_sysctl

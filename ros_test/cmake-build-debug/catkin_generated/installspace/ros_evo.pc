@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: ros_evo
+Description: Description of ros_evo
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

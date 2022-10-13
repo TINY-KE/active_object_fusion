@@ -26,7 +26,9 @@ float Frame::mnMinX, Frame::mnMinY, Frame::mnMaxX, Frame::mnMaxY;
 float Frame::mfGridElementWidthInv, Frame::mfGridElementHeightInv;
 
 Frame::Frame()
-{}
+{
+    std::cout<<"Debug： frame构造函数"<<std::endl;
+}
 
 //Copy Constructor
 Frame::Frame(const Frame &frame)

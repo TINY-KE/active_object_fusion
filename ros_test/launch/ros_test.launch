@@ -10,6 +10,6 @@
 
     </node>
 
-    <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch"/>
+<!--     <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch"/> -->
 
 </launch>

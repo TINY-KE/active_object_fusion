@@ -38,7 +38,7 @@
 
 // yolo online
 // #include "Semantic.h"
-#include "YOLOX.h"
+//#include "YOLOX.h"  采用ros版本yolo,因此去除yolox的Semanticer
 
 namespace ORB_SLAM2
 {
@@ -49,7 +49,7 @@ class Map;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
-class YOLOX;
+//class YOLOX;
 
 class System
 {
@@ -76,7 +76,7 @@ public:
     // Input image: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Input depthmap: Float (CV_32F).
     // Returns the camera pose (empty if tracking fails).
-    cv::Mat TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp);
+    cv::Mat TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const std::vector<BoxSE> & bboxMat);
 
     // Proccess the given monocular frame
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
@@ -141,8 +141,6 @@ private:
     // Loop Closer. It searches loops with every new keyframe. If there is a loop it performs
     // a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
     LoopClosing* mpLoopCloser;
-
-    YOLOX* mpSemanticer;  // yolo online.
 
     // The viewer draws the map and the current camera pose. It uses Pangolin.
     Viewer* mpViewer;

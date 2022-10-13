@@ -4,23 +4,28 @@ project(ros_evo)
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE release)
 ENDIF()
+SET(CMAKE_BUILD_TYPE Debug)
+MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
+#[ERROR]: no matching function for call to ‘_IplImage::_IplImage(cv::Mat&)’
+set(CMAKE_CXX_FLAGS -DCV__ENABLE_C_API_CTORS)
 # yolox
 ADD_DEFINITIONS("-w -O2 -pthread")
 option(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(CMAKE_CXX_STANDARD 14)
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native  -Wno-unused-function  -Wno-return-type")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native  -Wno-unused-function  -Wno-return-type")
-
+# O0 -Wall -g -ggdb  前三个是做什么的？
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}    ")   #-march=native -Wno-return-type -Wall  -O3   -Wno-unused-function  
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}   ") #-march=native -Wno-return-type -Wall   -O3   -Wno-unused-function
+ 
 # set carv needed flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__STDC_CONSTANT_MACROS -DGL_GLEXT_PROTOTYPES -D_LINUX -D_REENTRANT -DCGAL_USE_F2C -DCGAL_DISABLE_ROUNDING_MATH_CHECK")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_CONSTANT_MACROS -DGL_GLEXT_PROTOTYPES -D_LINUX -D_REENTRANT -DCGAL_USE_F2C -DCGAL_DISABLE_ROUNDING_MATH_CHECK")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake_modules)
 
+set(OpenCV_DIR "/home/zhjd/thirdparty/opencv3.4.10/opencv-3.4.10/build")
 find_package(OpenCV 3.0 QUIET)
 if(NOT OpenCV_FOUND)
     find_package(OpenCV 2.4.3 QUIET)
@@ -43,7 +48,7 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# Find CGAL
+# Find CGAL  sudo apt-get install libcgal-dev
 set(CMAKE_BUILD_TYPE_BACKUP ${CMAKE_BUILD_TYPE})
 set(CMAKE_BUILD_TYPE "Release")
 find_package(CGAL REQUIRED COMPONENTS Core)
@@ -56,30 +61,31 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
 # Find PCL
+set(PCL_DIR "/home/zhjd/Thirdparty/pcl-1.8.0/pcl-pcl-1.8.0/build")
 find_package( PCL 1.7 REQUIRED)
 add_definitions( ${PCL_DEFINITIONS} )
 link_directories( ${PCL_LIBRARY_DIRS} )
 
-# BLAS and LAPACK
+# BLAS and LAPACK  科学计算包 sudo apt-get install libblas-dev liblapack-dev liblapacke-dev
 find_package(LAPACK REQUIRED)
 link_directories(${LAPACK_LIBRARY_DIR})
 
-## CUDA及TensorRT相关
-find_package(CUDA REQUIRED)
-include_directories(${PROJECT_SOURCE_DIR}/include)
-# cuda
-include_directories(/usr/local/cuda-11.6/include)
-link_directories(/usr/local/cuda-11.6/lib64)
-# cudnn
-include_directories(/home/zhjd/cuda-11.6/include)
-link_directories(/home/zhjd/cuda-11.6/lib64)
+### CUDA及TensorRT相关  zhangjiadong  yolo
+#find_package(CUDA REQUIRED)
+#include_directories(${PROJECT_SOURCE_DIR}/include)
+## cuda
+#include_directories(/usr/local/cuda-11.6/include)
+#link_directories(/usr/local/cuda-11.6/lib64)
+## cudnn
+#include_directories(/home/zhjd/cuda-11.6/include)
+#link_directories(/home/zhjd/cuda-11.6/lib64)
 # tensorrt
 # include_directories(/home/chen/DeepLearning/settings/TensorRT-7.2.1.6/include)
 # link_directories(/home/chen/DeepLearning/settings/TensorRT-7.2.1.6/lib)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Ofast -Wfatal-errors -D_MWAITXINTRIN_H_INCLUDED")
-
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Ofast -Wfatal-errors -D_MWAITXINTRIN_H_INCLUDED")
+set(CMAKE_CXX_STANDARD 17)
+set(cv_bridge_DIR /home/zhjd/thirdparty/vision_opencv-indigo/cv_bridge/cmake)
 find_package(
     catkin REQUIRED COMPONENTS
     roscpp
@@ -118,6 +124,7 @@ catkin_package(
 include_directories(
     include ${catkin_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}
+    /home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/include
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../include
     ${EIGEN3_INCLUDE_DIR}
@@ -133,13 +140,59 @@ include_directories(
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../lib)
 
+#add_library(${PROJECT_NAME}_noros_lib SHARED
+#        # yolox
+#        #    ../src/YOLOX.cc
+#
+#        # base
+#        ../src/System.cc
+#        ../src/Tracking.cc
+#        ../src/LocalMapping.cc
+#        ../src/LoopClosing.cc
+#        ../src/ORBextractor.cc
+#        ../src/ORBmatcher.cc
+#        ../src/FrameDrawer.cc
+#        ../src/Converter.cc
+#        ../src/MapPoint.cc
+#        ../src/KeyFrame.cc
+#        ../src/Map.cc
+#        ../src/MapDrawer.cc
+#        ../src/Optimizer.cc
+#        ../src/PnPsolver.cc
+#        ../src/Frame.cc
+#        ../src/KeyFrameDatabase.cc
+#        ../src/Sim3Solver.cc
+#        ../src/Initializer.cc
+#        ../src/Viewer.cc
+#        ../src/Object.cc      # NOTE [EAO-SLAM]
+#
+#        # plane
+#        ../src/MapPlane.cc
+#        ../src/g2oAddition/EdgePlane.cc
+#        ../src/g2oAddition/VertexPlane.cc
+#        # depth filter
+#        #    ../src/DepthFilter/JBF.cc
+#        #    ../src/DepthFilter/Kernel.cc
+#   )
+#target_link_libraries(${PROJECT_NAME}_noros_lib
+#        ${catkin_LIBRARIES}
+#        ${OpenCV_LIBS}
+#        ${EIGEN3_LIBS}
+#        ${Pangolin_LIBRARIES}
+#        ${PCL_LIBRARIES}
+#        ${PROJECT_SOURCE_DIR}/../Thirdparty/DBoW2/lib/libDBoW2.so
+#        ${PROJECT_SOURCE_DIR}/../Thirdparty/g2o/lib/libg2o.so
+#        boost_system boost_filesystem boost_serialization
+#        lapack blas
+##zhangjiadong yolo
+##        nvinfer
+##        cudart
+#        # dw
+#     )
+
 add_library(${PROJECT_NAME}_lib SHARED
-    # yolox
-    ../src/YOLOX.cc
-    # ros
-    src/message_flow.cc
-    src/imu_subscriber.cc
-    src/image_subscriber.cc
+
+    ../src/System.cc
     # base
     ../src/System.cc
     ../src/Tracking.cc
@@ -162,14 +215,17 @@ add_library(${PROJECT_NAME}_lib SHARED
     ../src/Viewer.cc
     ../src/Object.cc      # NOTE [EAO-SLAM]
 
+
+    # ros
+    src/message_flow.cc
+    src/image_subscriber.cc
+    
     # plane
     ../src/MapPlane.cc
     ../src/g2oAddition/EdgePlane.cc
     ../src/g2oAddition/VertexPlane.cc
-    # depth filter
-    ../src/DepthFilter/JBF.cc
-    ../src/DepthFilter/Kernel.cc
-)
+
+        )
 
 
 target_link_libraries(${PROJECT_NAME}_lib
@@ -182,26 +238,33 @@ target_link_libraries(${PROJECT_NAME}_lib
     ${PROJECT_SOURCE_DIR}/../Thirdparty/g2o/lib/libg2o.so
     boost_system boost_filesystem boost_serialization
     lapack blas
-    nvinfer
-    cudart
+# zhangjiadong yolo
+#        nvinfer
+#    cudart
     # dw
+    /opt/ros/melodic/lib/libxmlrpcpp.so
 )
 
+# imu版本
+##add_executable(ros_rgbd_imu app/ros_rgbd_imu.cpp)
+##add_dependencies(ros_rgbd_imu ${catkin_EXPORTED_TARGETS})
+##target_link_libraries(ros_rgbd_imu ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
-add_executable(ros_rgbd_imu app/ros_rgbd_imu.cpp)
-add_dependencies(ros_rgbd_imu ${catkin_EXPORTED_TARGETS})
-target_link_libraries(ros_rgbd_imu ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
-
-add_executable(ros_rgbd app/ros_rgbd.cpp)
+# rgd版本
+add_executable(ros_rgbd app/ros_rgbd.cpp )   #src/image_subscriber.cc  src/message_flow.cc
 add_dependencies(ros_rgbd ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ros_rgbd ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../tools)
-add_executable(bin_vocabulary
- ../tools/bin_vocabulary.cc)
-target_link_libraries(bin_vocabulary ${PROJECT_NAME}_lib)
+# ？？
+## set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../tools)
+#add_executable(bin_vocabulary
+# ../tools/bin_vocabulary.cc)
+#target_link_libraries(bin_vocabulary ${PROJECT_NAME}_lib)
 
-
+# test版本
+add_executable(sync_test src/real_topic_test.cpp)
+add_dependencies(sync_test ${catkin_EXPORTED_TARGETS})
+target_link_libraries(sync_test    ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )
 
 #############
 ## Install ##

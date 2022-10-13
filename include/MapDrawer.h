@@ -26,7 +26,7 @@
 #include"KeyFrame.h"
 #include<pangolin/pangolin.h>
 
-
+#include <yolo_label.h>
 #include<mutex>
 
 namespace ORB_SLAM2

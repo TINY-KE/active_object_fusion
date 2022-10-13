@@ -1,4 +1,6 @@
 <launch>
+<!--     <include file="$(find darknet_ros)/launch/darknet_ros.launch"/> -->
+
     <node pkg="ros_evo"  type="ros_rgbd"  name="ros_rgbd"  output="screen">
         <!-- <param name="sensor" value="MONO"/> -->
         <param name="sensor" value="RGBD"/>
@@ -7,6 +9,18 @@
         <param name="rosbag" value="true" type="bool"/>
         <!-- <param name="gravity_aixs" value="2" type="int"/> -->
         <param name="gravity_aixs" value="3" type="int"/>
+
+        <!--TUM 3 -->
+<!--        <param name="rgb_topic" value="/camera/rgb/image_color" type="string"/>-->
+<!--        <param name="depth_topic" value="/camera/depth/image" type="string"/>-->
+<!--        <param name="bbox_topic" value="/darknet_ros/bounding_boxes" type="string"/>-->
+<!--        <param name="yamlfile" value="TUM3.yaml" type="string"/>-->
+
+        <!-- KINECT DK-->
+        <param name="rgb_topic" value="/rgb/image_raw" type="string"/>
+        <param name="depth_topic" value="/depth_to_rgb/image_raw" type="string"/>
+        <param name="bbox_topic" value="/darknet_ros/bounding_boxes" type="string"/>
+        <param name="yamlfile" value="TUM3.yaml" type="string"/><!-- kinectdk_720.yaml -->
     </node>
 
 </launch>

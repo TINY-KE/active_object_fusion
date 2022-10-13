@@ -7,6 +7,7 @@
 #include <iostream>
 #include "Params.h"
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <ctime>
 
 using namespace std;

@@ -25,6 +25,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <yolo_label.h>
 namespace ORB_SLAM2
 {
 

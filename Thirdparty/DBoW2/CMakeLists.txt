@@ -23,7 +23,7 @@ set(HDRS_DUTILS
 set(SRCS_DUTILS
   DUtils/Random.cpp
   DUtils/Timestamp.cpp)
-
+set(OpenCV_DIR "/home/zhjd/thirdparty/opencv3.4.10/opencv-3.4.10/build")
 find_package(OpenCV REQUIRED)
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

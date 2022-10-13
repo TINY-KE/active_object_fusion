@@ -21,6 +21,7 @@
 // Eigen
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 typedef Eigen::Matrix<float,5,1> Vector5f;
 
 namespace ORB_SLAM2

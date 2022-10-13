@@ -27,6 +27,7 @@
 // Eigen
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 #include "YOLOv3SE.h"
 
@@ -66,7 +67,7 @@ typedef Eigen::Matrix<double,6,1> Vector6d;
 
 struct ImagePointCloud
 {
-    std::vector<Eigen::Vector3d> vertices; // 3D vertices
+    std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > vertices; // 3D vertices
     int w, h;
 
     inline int width() const { return w; }

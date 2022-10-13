@@ -24,7 +24,7 @@ bool SaveOdometryCb(ros_evo::saveOdometry::Request &request, ros_evo::saveOdomet
 
 int main(int argc, char *argv[])
 {
-    WORK_SPACE_PATH = ros::package::getPath("ros_evo") + "/../";
+    WORK_SPACE_PATH = "/home/zhjd/ws_active/src/kinect/EAO-Fusion/" ;//ros::package::getPath("ros_evo") + "/../";
 
     ros::init(argc, argv, "ros_node");
     ros::NodeHandle nh;

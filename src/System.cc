@@ -40,7 +40,7 @@ namespace ORB_SLAM2
 
 System::System(const string &strVocFile, const string &strSettingsFile,
                const string &flag, const eSensor sensor,
-               const bool bUseViewer, const bool SemanticOnline):  mSensor(sensor),
+               const bool bUseViewer, const bool SemanticOnline /*const bool SemanticOnline = false*/):  mSensor(sensor),
                                         mbReset(false),
                                         mbActivateLocalizationMode(false),
                                         mbDeactivateLocalizationMode(false),
@@ -109,9 +109,9 @@ System::System(const string &strVocFile, const string &strSettingsFile,
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
 
     // _____________________________yolox_______________________________
-    std::string engineFile = WORK_SPACE_PATH + "/ros_test/config/model_trt.engine";
-    mpSemanticer = new YOLOX(engineFile);
-    mptSemanticer = new thread(&ORB_SLAM2::YOLOX::Run, mpSemanticer);
+//zhangjiadong yolox    std::string engineFile = WORK_SPACE_PATH + "/ros_test/config/model_trt.engine";
+//    mpSemanticer = new YOLOX(engineFile);
+//    mptSemanticer = new thread(&ORB_SLAM2::YOLOX::Run, mpSemanticer);
     // _____________________________yolox_______________________________
 
     //Initialize the Viewer thread and launch
@@ -129,17 +129,19 @@ System::System(const string &strVocFile, const string &strSettingsFile,
     mpLoopCloser->SetLocalMapper(mpLocalMapper);
 
     // [EAO] Set pointers between threads.
-    if(bSemanticOnline)
-    {
-        mpTracker->SetSemanticer(mpSemanticer);
-    }
-    if(bSemanticOnline)
-    {
-        mpSemanticer->SetTracker(mpTracker);
-    }
+//zhangjiadong yolox    if(bSemanticOnline)
+//    {
+//        mpTracker->SetSemanticer(mpSemanticer);
+//    }
+
+//zhangjiadong yolo
+//    if(bSemanticOnline)
+//    {
+//        mpSemanticer->SetTracker(mpTracker);
+//    }
 }
 
-cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp)
+cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const std::vector<BoxSE> & bbox)
 {
     if(mSensor!=RGBD)
     {
@@ -181,53 +183,53 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
     }
 
 
-    return mpTracker->GrabImageRGBD(im, depthmap, timestamp, bSemanticOnline);
+    return mpTracker->GrabImageRGBD(im, depthmap, timestamp, bbox, bSemanticOnline);
 }
 
 cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
 {
-    if(mSensor!=MONOCULAR)
-    {
-        cerr << "ERROR: you called TrackMonocular but input sensor was not set to Monocular." << endl;
-        exit(-1);
-    }
-
-    // Check mode change
-    {
-        unique_lock<mutex> lock(mMutexMode);
-        if(mbActivateLocalizationMode)
-        {
-            mpLocalMapper->RequestStop();
-
-            // Wait until Local Mapping has effectively stopped
-            while(!mpLocalMapper->isStopped())
-            {
-                usleep(1000);
-            }
-
-            mpTracker->InformOnlyTracking(true);
-            mbActivateLocalizationMode = false;
-        }
-        if(mbDeactivateLocalizationMode)
-        {
-            mpTracker->InformOnlyTracking(false);
-            mpLocalMapper->Release();
-            mbDeactivateLocalizationMode = false;
-        }
-    }
-
-    // Check reset
-    {
-    unique_lock<mutex> lock(mMutexReset);
-    if(mbReset)
-    {
-        mpTracker->Reset();
-        mbReset = false;
-    }
-    }
-
-
-    return mpTracker->GrabImageMonocular(im, timestamp, bSemanticOnline);
+//    if(mSensor!=MONOCULAR)
+//    {
+//        cerr << "ERROR: you called TrackMonocular but input sensor was not set to Monocular." << endl;
+//        exit(-1);
+//    }
+//
+//    // Check mode change
+//    {
+//        unique_lock<mutex> lock(mMutexMode);
+//        if(mbActivateLocalizationMode)
+//        {
+//            mpLocalMapper->RequestStop();
+//
+//            // Wait until Local Mapping has effectively stopped
+//            while(!mpLocalMapper->isStopped())
+//            {
+//                usleep(1000);
+//            }
+//
+//            mpTracker->InformOnlyTracking(true);
+//            mbActivateLocalizationMode = false;
+//        }
+//        if(mbDeactivateLocalizationMode)
+//        {
+//            mpTracker->InformOnlyTracking(false);
+//            mpLocalMapper->Release();
+//            mbDeactivateLocalizationMode = false;
+//        }
+//    }
+//
+//    // Check reset
+//    {
+//    unique_lock<mutex> lock(mMutexReset);
+//    if(mbReset)
+//    {
+//        mpTracker->Reset();
+//        mbReset = false;
+//    }
+//    }
+//
+//
+//    return mpTracker->GrabImageMonocular(im, timestamp, bSemanticOnline);
 }
 
 void System::ActivateLocalizationMode()
@@ -252,12 +254,12 @@ void System::Shutdown()
 {
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
-    mpSemanticer->RequestFinish();
+//    mpSemanticer->RequestFinish();
 
     // Wait until all thread have effectively stopped
     while (!mpLocalMapper->isFinished() ||
            !mpLoopCloser->isFinished() ||
-           !mpSemanticer->isFinished() ||
+//           !mpSemanticer->isFinished() ||
             mpLoopCloser->isRunningGBA())
     {
         usleep(5000);
