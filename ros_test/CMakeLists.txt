@@ -56,7 +56,8 @@ include( ${CGAL_USE_FILE} )
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE_BACKUP})
 
 # Find Boost
-find_package(Boost REQUIRED)
+find_package(Boost  REQUIRED COMPONENTS filesystem thread date_time iostreams serialization chrono system)
+# find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 

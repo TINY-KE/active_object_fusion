@@ -126,13 +126,20 @@ int main(int argc, char **argv)
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), image_sub, depth_sub, bbox_sub);
     message_filters::Synchronizer<sync_pol_only_image> sync_only_image(sync_pol_only_image (10), image_sub, depth_sub);
     
-    system_ptr = new ORB_SLAM2::System("/home/zhjd/ws_active/src/kinect/EAO-Fusion/Vocabulary/ORBvoc.bin",
-                             "/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/config/TUM3_ros.yaml",
-                             "Full",
-                             ORB_SLAM2::System::RGBD,
-                             true,
-                             true
-                             );
+
+//(2)SYSTEM
+    string yamlfile, sensor; bool semanticOnline, rosBagFlag;
+    const std::string VocFile = WORK_SPACE_PATH + "/Vocabulary/ORBvoc.bin";
+    // const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/D435i.yaml";
+    ros::param::param<std::string>("~yamlfile", yamlfile, "TUM3_ros.yaml"); /*TUM3.yaml  kinectdk_720.yaml*/
+    const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/" + yamlfile;
+    // 读取launch文件中的参数
+    ros::param::param<std::string>("~sensor", sensor, "RGBD");
+    
+    ros::param::param<bool>("~rosbag", rosBagFlag, "false");  //  这是做什么的???/
+    ros::param::param<bool>("~online", semanticOnline, "true");
+//    slam_ptr_ = std::make_shared<ORB_SLAM2::System>(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);
+    system_ptr = new ORB_SLAM2::System(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);                     
 
 
     sync.registerCallback(boost::bind(&GrabImage,_1,_2,_3));
@@ -143,29 +150,9 @@ int main(int argc, char **argv)
     std::cout << "Waiting for comming frames..." << std::endl;
 
 
-//(2)SYSTEM
-    string yamlfile, sensor, semanticOnline, rosBagFlag;
-    // 读取参数文件
-//    const std::string VocFile = WORK_SPACE_PATH + "/Vocabulary/ORBvoc.bin";
-//    // const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/D435i.yaml";
-//    ros::param::param<std::string>("~yamlfile", yamlfile, "TUM3.yaml"); /*TUM3.yaml  kinectdk_720.yaml*/
-//    //    const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/" + yamlfile;
-//    const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/TUM2.yaml";
-//    // 读取launch文件中的参数
-//    ros::param::param<std::string>("~sensor", sensor, "RGBD");
-//    ros::param::param<bool>("~online", semanticOnline, "true");
-//    ros::param::param<bool>("~rosbag", rosBagFlag, "false");  //  这是做什么的???/
-    // 系统初始化
-//    slam_ptr_ = std::make_shared<ORB_SLAM2::System>(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);
-//  /home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/src/real_topic_test.cpp
 
-    // ORB_SLAM2::System system("/home/zhjd/ws_active/src/kinect/EAO-Fusion/Vocabulary/ORBvoc.bin",
-    //                          "/home/zhjd/ws_active/src/kinect/EAO-Fusion/ros_test/config/TUM2.yaml",
-    //                          "Full",
-    //                          ORB_SLAM2::System::RGBD,
-    //                          true,
-    //                          true
-    //                          );
+
+
 
     
     ros::spin();
@@ -238,7 +225,7 @@ void GrabImage(const ImageConstPtr& msgImage, const ImageConstPtr& msgDepth, con
     if( boxes.size() == 0 )
     {
         std::cerr << "No detection. " << std::endl;
-        return;
+        // return;  //zhangjiadong  不能return,否则orbslam无法运行.
     }
     std::vector<BoxSE> BboxVector = darknetRosMsgToBoxSE(boxes);
 
