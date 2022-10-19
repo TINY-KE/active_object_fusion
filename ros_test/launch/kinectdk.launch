@@ -15,7 +15,7 @@
         <param name="rgb_topic" value="/rgb/image_raw" type="string"/>
         <param name="depth_topic" value="/depth_to_rgb/image_raw" type="string"/>
         <param name="bbox_topic" value="/darknet_ros/bounding_boxes" type="string"/>
-        <param name="yamlfile" value="kinectdk_lj.yaml" type="string"/>
+        <param name="yamlfile" value="kinectdk.yaml" type="string"/>
         <!-- kinectdk_720.yaml -->
     </node>
 

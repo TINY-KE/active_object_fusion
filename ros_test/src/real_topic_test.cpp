@@ -1,11 +1,4 @@
-// Update: 2021-4-30 by Lzw
-// 为 demo 而修改，融合 ORBSLAM2与YOLO的实时演示
 
-// Update: 20-1-8 by lzw
-// 适应真实数据集. 
-
-// Update: 19-12-24 by lzw
-// 从ros话题读取检测结果测试椭球体重建效果.
 
 // 该文件作为基本ros模板.
 
@@ -33,22 +26,96 @@ using namespace sensor_msgs;
 #include <message_filters/sync_policies/approximate_time.h>
 using namespace message_filters;
 
-#include <geometry_msgs/PoseStamped.h>
+
+// #include <tf/Quat>
 using namespace geometry_msgs;
+
 int i = 0;
 #include <Eigen/Core>
-
+// #include <Eigen>
 #include <System.h>
 #include "Global.h"
 #include <Eigen/Dense>
 #include <eigen3/Eigen/Dense>
+
+// imu的相关工具
+#include "tf/transform_datatypes.h"//转换函数头文件
+#include <sensor_msgs/Imu.h>//imu数据信息
+#include <sensor_msgs/Imu.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Quaternion.h>
 
 using namespace std;
 std::string WORK_SPACE_PATH = "";
 ORB_SLAM2::System* system_ptr;
 
 //std::string DatasetType;
+Eigen::Matrix4d INIT_POSE = Eigen::Matrix4d::Identity();
+std::vector<BoxSE> darknetRosMsgToBoxSE(std::vector<darknet_ros_msgs::BoundingBox>& boxes);
 
+void GrabImage(const ImageConstPtr& image, const ImageConstPtr& depth, const darknet_ros_msgs::BoundingBoxesConstPtr& bbox);
+
+void GrabIMU(const sensor_msgs::ImuConstPtr& imu_msg_ptr);
+
+bool InitIMU();
+
+int main(int argc, char **argv)
+{
+    WORK_SPACE_PATH = "/home/zhjd/ws_active/src/kinect/EAO-Fusion/";//ros::package::getPath("ros_evo") + "/../";
+
+//(1) ROS
+    ros::init(argc, argv, "EllipsoidSLAM");
+    ros::NodeHandle nh;
+
+    
+//tum_bag:     /camera/rgb/image_color    /camera/depth/image
+//kinect_dk和rosbag_correct:  /rgb/image_raw   /depth_to_rgb/image_raw
+    message_filters::Subscriber<Image> image_sub(nh, "/rgb/image_raw", 1);
+    message_filters::Subscriber<Image> depth_sub(nh, "/depth_to_rgb/image_raw", 1);
+    message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes> bbox_sub(nh, "/darknet_ros/bounding_boxes", 1);
+//    ros::Subscriber sub = nh.subscribe<darknet_ros_msgs::BoundingBoxes>( "/darknet_ros/bounding_boxes" , 10 , GrabBbox );
+    typedef message_filters::sync_policies::ApproximateTime
+            <Image, Image, darknet_ros_msgs::BoundingBoxes> sync_pol;
+    typedef message_filters::sync_policies::ApproximateTime
+            <Image, Image> sync_pol_only_image;
+    message_filters::Synchronizer<sync_pol> sync(sync_pol(10), image_sub, depth_sub, bbox_sub);
+    message_filters::Synchronizer<sync_pol_only_image> sync_only_image(sync_pol_only_image (10), image_sub, depth_sub);
+    
+    ros::Subscriber sub_imu = nh.subscribe<sensor_msgs::Imu>( "/imu/data" , 100 , GrabIMU );
+
+//(2)SYSTEM
+    string yamlfile, sensor; bool semanticOnline, rosBagFlag;
+    const std::string VocFile = WORK_SPACE_PATH + "/Vocabulary/ORBvoc.bin";
+    // const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/D435i.yaml";
+    ros::param::param<std::string>("~yamlfile", yamlfile, "kinectdk.yaml"); /*TUM3.yaml TUM3_ros.yaml kinectdk_720.yaml*/
+    const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/" + yamlfile;
+    // 读取launch文件中的参数
+    ros::param::param<std::string>("~sensor", sensor, "RGBD");
+    
+    ros::param::param<bool>("~rosbag", rosBagFlag, "false");  //  这是做什么的???/
+    ros::param::param<bool>("~online", semanticOnline, "true");
+//    slam_ptr_ = std::make_shared<ORB_SLAM2::System>(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);
+    system_ptr = new ORB_SLAM2::System(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);                     
+
+
+    sync.registerCallback(boost::bind(&GrabImage,_1,_2,_3));
+    //    sync_only_image.registerCallback(boost::bind(&GrabImage,_1,_2));
+    // 显示窗口
+    // cv::namedWindow("rgb", cv::WINDOW_NORMAL);
+    // cv::namedWindow("depth", cv::WINDOW_NORMAL);
+    std::cout << "Waiting for comming frames..." << std::endl;
+
+
+
+
+
+
+    
+    ros::spin();
+    ros::shutdown();
+
+    return 0;
+}
 std::vector<BoxSE> darknetRosMsgToBoxSE(std::vector<darknet_ros_msgs::BoundingBox>& boxes){
         //修改
         if (boxes.size() == 0)
@@ -100,66 +167,6 @@ std::vector<BoxSE> darknetRosMsgToBoxSE(std::vector<darknet_ros_msgs::BoundingBo
 //    }
 //    return boxMat;
     }
-
-
-void GrabImage(const ImageConstPtr& image, const ImageConstPtr& depth, const darknet_ros_msgs::BoundingBoxesConstPtr& bbox);
-
-int main(int argc, char **argv)
-{
-    WORK_SPACE_PATH = "/home/zhjd/ws_active/src/kinect/EAO-Fusion/";//ros::package::getPath("ros_evo") + "/../";
-
-//(1) ROS
-    ros::init(argc, argv, "EllipsoidSLAM");
-    ros::NodeHandle nh;
-
-    
-//tum_bag:     /camera/rgb/image_color    /camera/depth/image
-//kinect_dk和rosbag_correct:  /rgb/image_raw   /depth_to_rgb/image_raw
-    message_filters::Subscriber<Image> image_sub(nh, "/rgb/image_raw", 1);
-    message_filters::Subscriber<Image> depth_sub(nh, "/depth_to_rgb/image_raw", 1);
-    message_filters::Subscriber<darknet_ros_msgs::BoundingBoxes> bbox_sub(nh, "/darknet_ros/bounding_boxes", 1);
-//    ros::Subscriber sub = nh.subscribe<darknet_ros_msgs::BoundingBoxes>( "/darknet_ros/bounding_boxes" , 10 , GrabBbox );
-    typedef message_filters::sync_policies::ApproximateTime
-            <Image, Image, darknet_ros_msgs::BoundingBoxes> sync_pol;
-    typedef message_filters::sync_policies::ApproximateTime
-            <Image, Image> sync_pol_only_image;
-    message_filters::Synchronizer<sync_pol> sync(sync_pol(10), image_sub, depth_sub, bbox_sub);
-    message_filters::Synchronizer<sync_pol_only_image> sync_only_image(sync_pol_only_image (10), image_sub, depth_sub);
-    
-
-//(2)SYSTEM
-    string yamlfile, sensor; bool semanticOnline, rosBagFlag;
-    const std::string VocFile = WORK_SPACE_PATH + "/Vocabulary/ORBvoc.bin";
-    // const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/D435i.yaml";
-    ros::param::param<std::string>("~yamlfile", yamlfile, "TUM3_ros.yaml"); /*TUM3.yaml  kinectdk_720.yaml*/
-    const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/" + yamlfile;
-    // 读取launch文件中的参数
-    ros::param::param<std::string>("~sensor", sensor, "RGBD");
-    
-    ros::param::param<bool>("~rosbag", rosBagFlag, "false");  //  这是做什么的???/
-    ros::param::param<bool>("~online", semanticOnline, "true");
-//    slam_ptr_ = std::make_shared<ORB_SLAM2::System>(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);
-    system_ptr = new ORB_SLAM2::System(VocFile, YamlFile, "Full", ORB_SLAM2::System::RGBD, true, semanticOnline);                     
-
-
-    sync.registerCallback(boost::bind(&GrabImage,_1,_2,_3));
-    //    sync_only_image.registerCallback(boost::bind(&GrabImage,_1,_2));
-    // 显示窗口
-    // cv::namedWindow("rgb", cv::WINDOW_NORMAL);
-    // cv::namedWindow("depth", cv::WINDOW_NORMAL);
-    std::cout << "Waiting for comming frames..." << std::endl;
-
-
-
-
-
-
-    
-    ros::spin();
-    ros::shutdown();
-
-    return 0;
-}
 
 void GrabImage(const ImageConstPtr& msgImage, const ImageConstPtr& msgDepth, const darknet_ros_msgs::BoundingBoxes::ConstPtr & msgBbox)
 {
@@ -233,4 +240,42 @@ void GrabImage(const ImageConstPtr& msgImage, const ImageConstPtr& msgDepth, con
     system_ptr -> TrackRGBD(imRGB, imDepth, current_time, BboxVector);
 }
 
+void GrabIMU(const sensor_msgs::ImuConstPtr& imu_msg_ptr) {
+
+    // eigen四元数
+    Eigen::Quaterniond q;
+    q.x() = imu_msg_ptr->orientation.x;
+    q.y() = imu_msg_ptr->orientation.y;
+    q.z() = imu_msg_ptr->orientation.z;
+    q.w() = imu_msg_ptr->orientation.w;
+
+    // 转为eigen的旋转矩阵 --先归一化再转为旋转矩阵
+    Eigen::Matrix3d R_imu_to_world = q.normalized().toRotationMatrix();
+
+    
+    
+    //定义一个四元数quadf
+    tf::Quaternion quat;
+    //把msg形式的四元数转化为tf形式,得到quat的tf形式
+    tf::quaternionMsgToTF(imu_msg_ptr->orientation, quat);
+    //定义存储r\p\y的容器
+    double roll, pitch, yaw;
+    //进行转换得到RPY欧拉角
+    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+    //定义将要发布的欧拉角数据类型           
+    // geometry_msgs::Point32 rpy_pt;
+    // rpy_pt.x = roll*180/ Pi;
+    // rpy_pt.y = pitch*180/ Pi;
+    // rpy_pt.z = yaw*180/ Pi;
+    double Pi = 3.1415926;
+    std::cout<<"roll="<<(roll*180/ Pi)<<"\t pitch="<<(pitch*180/ Pi)<<"\t yaw="<<(yaw*180/ Pi)<<std::endl;
+
+
+    Eigen::Matrix3d R_camera_to_imu;
+    R_camera_to_imu<< 0, -1, 0, 
+                    0, 0, 1, 
+                    -1, 0, 0;
+    // 赋值给INIT_POSE
+    INIT_POSE.block<3, 3>(0, 0) =   R_imu_to_world * R_camera_to_imu.inverse();
+}
 

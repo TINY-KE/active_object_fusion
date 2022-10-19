@@ -159,6 +159,7 @@ public:
 
     // Groundtruth.
     static bool mbReadedGroundtruth;
+    bool first_flag = true;
 
     bool mbObjectIni = false;          // initialize the object map.
     int mnObjectIniFrameID;

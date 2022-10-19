@@ -203,7 +203,7 @@ Tracking::Tracking( System *pSys, ORBVocabulary *pVoc, FrameDrawer *pFrameDrawer
     {
        if (mbReadedGroundtruth == false)  //为什么tracker生成时，就要读取mGroundtruth_mat
         {
-            std::string filePath = WORK_SPACE_PATH + "/data/groundtruth.txt";
+            std::string filePath = WORK_SPACE_PATH + "/data/groundtruth.txt";  
             ifstream infile(filePath, ios::in);
             if (!infile.is_open())
             {
@@ -565,13 +565,16 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB, const cv::Mat &imD, const 
                 mCurrentFrame.mGroundtruthPose_eigen = Eigen::Matrix4d::Identity(4, 4);
             }
         }
-    }else if (miConstraintType ==2){
-        mCurrentFrame.mGroundtruthPose_eigen = INIT_POSE;
+    }else if (miConstraintType ==2){   // 使用IMU  //zhangjiadong
+        
+        mCurrentFrame.mGroundtruthPose_eigen = INIT_POSE;  
+        // TODO: 如何获取初始位姿
+
         // mCurrentFrame.mGroundtruthPose_mat = cv::Mat::eye(4, 4, CV_32F);
         cv::Mat cv_mat_32f;
         cv::eigen2cv(mCurrentFrame.mGroundtruthPose_eigen, cv_mat_32f);
         cv_mat_32f.convertTo(mCurrentFrame.mGroundtruthPose_mat, CV_32F);
-    }else{
+    }else{   //miConstraintType == 0 .位姿设置为0. 那么怎么办呢??
         mCurrentFrame.mGroundtruthPose_mat = cv::Mat::eye(4, 4, CV_32F);
     }
     // get the camera groundtruth by timestamp. ----------------------------------------------------------------------
@@ -1166,7 +1169,16 @@ void Tracking::Track()
 
 void Tracking::StereoInitialization()
 {
-
+    Eigen::Matrix4d matrix_identity ;
+    matrix_identity <<  1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1;
+    std::cout << "INIT_POSEd"<<INIT_POSE << std::endl;       
+    if( miConstraintType ==2  && INIT_POSE ==  matrix_identity  ){  //假设位姿永远不可能正好为整数
+        mState =  NOT_INITIALIZED;
+    }
+    else 
     if (mCurrentFrame.N > 50)
     {
         // Set Frame pose to the origin
@@ -1233,10 +1245,11 @@ void Tracking::StereoInitialization()
         {
             // NOTE [EAO] rotate the world coordinate to the initial frame (groundtruth provides the normal vector of the ground).
             // only use the groundtruth of the first frame.
-            // TODO: 替换这种方法
-            cv::Mat InitToGround = mCurrentFrame.mGroundtruthPose_mat;
+
+            cv::Mat InitToGround = mCurrentFrame.mGroundtruthPose_mat;   //初始帧的位姿赋予. zhangjiadong
+            std::cout << "InitToGround"<<InitToGround << std::endl;
             // cv::Mat InitToGround = cv::Mat::eye(4, 4, CV_32F);
-            cv::Mat R = InitToGround.rowRange(0, 3).colRange(0, 3);
+            cv::Mat R = InitToGround.rowRange(0, 3).colRange(0, 3);  //地面到初始帧的变换关系
             cv::Mat t = InitToGround.rowRange(0, 3).col(3);
             cv::Mat Rinv = R.t();
             cv::Mat Ow = -Rinv * t;
@@ -1250,7 +1263,7 @@ void Tracking::StereoInitialization()
             std::vector<MapPoint *> vpAllMapPoints = pKFcur->GetMapPointMatches();
             if (build_worldframe_on_ground) // transform initial pose and map to ground frame
             {
-                pKFini->SetPose(pKFini->GetPose() * GroundToInit);
+                pKFini->SetPose(pKFini->GetPose() * GroundToInit);   //Tcw.clone()相机到init世界的变换关系,  再右乘init世界到真实世界的变换关系. 也就是groundtruth的逆.
                 pKFcur->SetPose(pKFcur->GetPose() * GroundToInit);
 
                 for (size_t iMP = 0; iMP < vpAllMapPoints.size(); iMP++)
