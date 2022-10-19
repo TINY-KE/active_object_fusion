@@ -6,7 +6,7 @@
 
 **TODO：**
 
-+ 在kinect dk IMU上使用. 利用ros姿态的imu tool求解imu_link的位姿，并根据imu_link和rgb_camera_link的变换关系。（利用ros tf变换为rgb_camera_link的位姿。错）
++ 
 + 在实际场景中尝试:鼠标,笔记本,桌子,椅子,
 + 
 
@@ -16,8 +16,8 @@
 + 将yolo改为ros版本（darknet ros）.并
 + 编写了rosbag timestamp correct程序以修正,相机rosbag和darknet_net的时间戳
 + darknet_ros未识别到物体时，也输出/darknet_ros/bounding_boxes。在darknet_ros源码的YoloObjectDetector.cpp的publishInThread()函数中,修改if (num > 0 && num <= 100)未if (num >= 0 && num <= 100)
-+ ConstraintType赋值为0时,设定初始帧的位姿为重力方向。 0: no constraint, first frame is vertical to ground; 1: use ground truth; 2: use imu.
-+ 
++ 在config文件中,ConstraintType为0时,设定初始帧的位姿为重力方向。
++ 在config文件中,ConstraintType为2时,根据kinect中的IMU生成真实的重力方向. 注意:IMU输出的位姿orientation,是imu坐标系在世界坐标系下的姿态, 即:世界坐标系到imu坐标系的旋转变换关系.
 
 
 **正在进行的修改：**

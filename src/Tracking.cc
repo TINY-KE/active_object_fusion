@@ -1245,7 +1245,7 @@ void Tracking::StereoInitialization()
         {
             // NOTE [EAO] rotate the world coordinate to the initial frame (groundtruth provides the normal vector of the ground).
             // only use the groundtruth of the first frame.
-
+            // TODO: 以下的InitToGround和GroundToInit,指的是point的坐标变换,与实际坐标系的变换 在名称是相反的(注意:数值是相同的). 为了保持程序原貌, 不做修改. 
             cv::Mat InitToGround = mCurrentFrame.mGroundtruthPose_mat;   //初始帧的位姿赋予. zhangjiadong
             std::cout << "InitToGround"<<InitToGround << std::endl;
             // cv::Mat InitToGround = cv::Mat::eye(4, 4, CV_32F);
@@ -1263,7 +1263,7 @@ void Tracking::StereoInitialization()
             std::vector<MapPoint *> vpAllMapPoints = pKFcur->GetMapPointMatches();
             if (build_worldframe_on_ground) // transform initial pose and map to ground frame
             {
-                pKFini->SetPose(pKFini->GetPose() * GroundToInit);   //Tcw.clone()相机到init世界的变换关系,  再右乘init世界到真实世界的变换关系. 也就是groundtruth的逆.
+                pKFini->SetPose(pKFini->GetPose() * GroundToInit);   //Tcw.clone()中是,相机坐标系到init世界的变换关系,  再右乘init世界到真实世界的变换关系. 也就是groundtruth的逆.
                 pKFcur->SetPose(pKFcur->GetPose() * GroundToInit);
 
                 for (size_t iMP = 0; iMP < vpAllMapPoints.size(); iMP++)

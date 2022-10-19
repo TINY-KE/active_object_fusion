@@ -249,33 +249,28 @@ void GrabIMU(const sensor_msgs::ImuConstPtr& imu_msg_ptr) {
     q.z() = imu_msg_ptr->orientation.z;
     q.w() = imu_msg_ptr->orientation.w;
 
-    // 转为eigen的旋转矩阵 --先归一化再转为旋转矩阵
-    Eigen::Matrix3d R_imu_to_world = q.normalized().toRotationMatrix();
+    // 转为eigen的旋转矩阵 --先归一化再转为旋转矩阵.  IMU输出的位姿orientation,是imu坐标系在世界坐标系下的姿态, 即:世界坐标系到imu坐标系的旋转变换关系..
+    Eigen::Matrix3d R_world_to_imu = q.normalized().toRotationMatrix();
 
-    
-    
-    //定义一个四元数quadf
-    tf::Quaternion quat;
-    //把msg形式的四元数转化为tf形式,得到quat的tf形式
-    tf::quaternionMsgToTF(imu_msg_ptr->orientation, quat);
-    //定义存储r\p\y的容器
-    double roll, pitch, yaw;
-    //进行转换得到RPY欧拉角
-    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
-    //定义将要发布的欧拉角数据类型           
-    // geometry_msgs::Point32 rpy_pt;
-    // rpy_pt.x = roll*180/ Pi;
-    // rpy_pt.y = pitch*180/ Pi;
-    // rpy_pt.z = yaw*180/ Pi;
-    double Pi = 3.1415926;
-    std::cout<<"roll="<<(roll*180/ Pi)<<"\t pitch="<<(pitch*180/ Pi)<<"\t yaw="<<(yaw*180/ Pi)<<std::endl;
+    // EDGUG:
+    // //定义一个四元数quadf
+    // tf::Quaternion quat;
+    // //把msg形式的四元数转化为tf形式,得到quat的tf形式
+    // tf::quaternionMsgToTF(imu_msg_ptr->orientation, quat);
+    // //定义存储r\p\y的容器
+    // double roll, pitch, yaw;
+    // //进行转换得到RPY欧拉角
+    // tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);        
+    // double Pi = 3.1415926;
+    // std::cout<<"roll="<<(roll*180/ Pi)<<"\t pitch="<<(pitch*180/ Pi)<<"\t yaw="<<(yaw*180/ Pi)<<std::endl;
 
 
     Eigen::Matrix3d R_camera_to_imu;
     R_camera_to_imu<< 0, -1, 0, 
                     0, 0, 1, 
                     -1, 0, 0;
-    // 赋值给INIT_POSE
-    INIT_POSE.block<3, 3>(0, 0) =   R_imu_to_world * R_camera_to_imu.inverse();
+    Eigen::Matrix3d R_imu_to_camera = R_camera_to_imu.inverse();
+    // 旋转矩阵的右乘: 
+    INIT_POSE.block<3, 3>(0, 0) =   R_world_to_imu * R_imu_to_camera;
 }
 
