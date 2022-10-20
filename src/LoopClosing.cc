@@ -351,21 +351,24 @@ bool LoopClosing::ComputeSim3()
 
     // Retrieve MapPoints seen in Loop Keyframe and neighbors
     vector<KeyFrame*> vpLoopConnectedKFs = mpMatchedKF->GetVectorCovisibleKeyFrames();
-    vpLoopConnectedKFs.push_back(mpMatchedKF);
+    vpLoopConnectedKFs.push_back(mpMatchedKF);  //zhang 将mpMatchedKF共视的关键帧全部取出来放入 vpLoopConnectedKFs
     mvpLoopMapPoints.clear();
     mvpLoopMapPlanes.clear();
+    // 遍历这个组中的每一个关键帧
     for(vector<KeyFrame*>::iterator vit=vpLoopConnectedKFs.begin(); vit!=vpLoopConnectedKFs.end(); vit++)
-    {
+    {   //zhangjiadong add point
         KeyFrame* pKF = *vit;
         vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
+        // 遍历其中一个关键帧的所有有效地图点
         for(size_t i=0, iend=vpMapPoints.size(); i<iend; i++)
         {
             MapPoint* pMP = vpMapPoints[i];
             if(pMP)
-            {
+            {   // mnLoopPointForKF 用于标记，避免重复添加
                 if(!pMP->isBad() && pMP->mnLoopPointForKF!=mpCurrentKF->mnId)
                 {
                     mvpLoopMapPoints.push_back(pMP);
+                    // zhangjiadong 标记一下
                     pMP->mnLoopPointForKF=mpCurrentKF->mnId;
                 }
             }

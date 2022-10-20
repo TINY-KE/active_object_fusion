@@ -94,7 +94,7 @@ Frame::Frame(const Frame &frame)
     }
 }
 
-
+// stereo
 Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth)
     :mpORBvocabulary(voc),mpORBextractorLeft(extractorLeft),mpORBextractorRight(extractorRight), mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
      mpReferenceKF(static_cast<KeyFrame*>(NULL))
@@ -153,7 +153,7 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     AssignFeaturesToGrid();
 }
 
-//rgbd
+//rgbd  我的程序用到的 是这个
 Frame::Frame(const cv::Mat &rawImage, // color image.
              const cv::Mat &imGray,
              const cv::Mat &imDepth,
@@ -182,7 +182,7 @@ Frame::Frame(const cv::Mat &rawImage, // color image.
     // Frame ID
     mnId=nNextId++;
 
-    // Scale Level Info
+    // Scale Level Info  存储的是orb提取的规则
     mnScaleLevels = mpORBextractorLeft->GetLevels();
     mfScaleFactor = mpORBextractorLeft->GetScaleFactor();
     mfLogScaleFactor = log(mfScaleFactor);
@@ -191,7 +191,7 @@ Frame::Frame(const cv::Mat &rawImage, // color image.
     mvLevelSigma2 = mpORBextractorLeft->GetScaleSigmaSquares();
     mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
 
-    // ORB extraction
+    // ORB extraction 用灰度图,提取orb
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     ExtractORB(0,imGray);
 
@@ -202,7 +202,7 @@ Frame::Frame(const cv::Mat &rawImage, // color image.
 
     UndistortKeyPoints();
 
-    ComputeStereoFromRGBD(imDepth);
+    ComputeStereoFromRGBD(imDepth);   //RGBD图像的立体深度信息
 
     mvpMapPoints = vector<MapPoint*>(N,static_cast<MapPoint*>(NULL));
     mvbOutlier = vector<bool>(N,false);
@@ -308,7 +308,7 @@ void Frame::ComputePlanesFromOrganizedPointCloud(const cv::Mat &imDepth)
     mps.setDistanceThreshold(DisTh);
     mps.setInputNormals(cloud_normals);
     mps.setInputCloud(inputCloud);
-    // 该方法能够一次性提取几个面
+    // 该方法能够一次性提取几个面 TODO:
     std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT>>> regions;
     mps.segmentAndRefine(regions, coefficients, inliers, labels, label_indices, boundary);
 
@@ -338,13 +338,13 @@ void Frame::ComputePlanesFromOrganizedPointCloud(const cv::Mat &imDepth)
         extract.setIndices(boost::make_shared<pcl::PointIndices>(inliers[i]));
         extract.filter(*planeCloud);
 
-        mvPlanePoints.push_back(*planeCloud);
+        mvPlanePoints.push_back(*planeCloud);  //平面的点云
 
         PointCloud::Ptr boundaryPoints(new PointCloud());
         // 获得平面的边界点
         boundaryPoints->points = regions[i].getContour();
-        mvBoundaryPoints.push_back(*boundaryPoints);
-        mvPlaneCoefficients.push_back(coef);
+        mvBoundaryPoints.push_back(*boundaryPoints);  //面边界上的点云
+        mvPlaneCoefficients.push_back(coef);   //平面的系数Mat
     }
 }
 
@@ -382,10 +382,10 @@ cv::Mat Frame::ComputePlaneWorldCoeff(const int &idx)
 
 void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
 {
-    int cloudDis = 1;
+    int cloudDis = 1;  //zhangjiadong  用于间隔采样
     int vertex_idx = 0;
 
-    // 间隔cloudDis进行采样
+    // 间隔cloudDis进行采样, 对深度图像imDepth ...
     cloud.vertices.resize(imDepth.rows * imDepth.cols);
     cloud.w = ceil(imDepth.cols / float(cloudDis));
     cloud.h = ceil(imDepth.rows / float(cloudDis));
@@ -407,6 +407,9 @@ void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
     }
 
     seg_img_ = cv::Mat(imDepth.rows, imDepth.cols, CV_8UC3);
+    // run函数: 对于当前帧中的点云输入,进行AHC平面计算.
+    // 其中,  plane_vertices_ 指向 segmentation membership vector. 每个 pMembership->at(i) is a vector of pixel indices that belong to the i-th extracted plane
+    // 也就是说 ,   plane_vertices_.->at(i) 存储的不是 平面,  而是平面中各point 在icloud(深度图像indepth间隔采样的结果)中的像素的索引.
     plane_filter.run(&cloud, &plane_vertices_, &seg_img_);
 
     plane_num_ = (int)plane_vertices_.size();
@@ -415,7 +418,7 @@ void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
         auto &indices = plane_vertices_[i];
         // 遍历每平面上的点云
         PointCloud::Ptr inputCloud(new PointCloud());
-        for (int j : indices)
+        for (int j : indices)  //遍历每平面上的点云,将它的坐标,存储在inputCloud中. 注: inputCloud将被pcl滤波
         {
             PointT p;
             p.x = (float)cloud.vertices[j][0];
@@ -424,7 +427,7 @@ void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
             // 插入点云
             inputCloud->points.push_back(p);
         }
-        auto extractedPlane = plane_filter.extractedPlanes[i];
+        auto extractedPlane = plane_filter.extractedPlanes[i];   //此变量数据类型为 PlaneSeg::shared_ptr,  是peac中提取的平面extracted planes
         double nx = extractedPlane->normal[0];
         double ny = extractedPlane->normal[1];
         double nz = extractedPlane->normal[2];
@@ -434,13 +437,14 @@ void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
 
         float d = (float)-(nx * cx + ny * cy + nz * cz);
 
+        //pcl 下采样
         pcl::VoxelGrid<PointT> voxel;
         voxel.setLeafSize(0.05, 0.05, 0.05);
         PointCloud::Ptr coarseCloud(new PointCloud());
         voxel.setInputCloud(inputCloud);
         voxel.filter(*coarseCloud);
 
-        cv::Mat coef = (cv::Mat_<float>(4, 1) << nx, ny, nz, d);
+        cv::Mat coef = (cv::Mat_<float>(4, 1) << nx, ny, nz, d); //zhangjiadong
 
         // 要求距离d大于0
         if (coef.at<float>(3) < 0)
@@ -452,9 +456,9 @@ void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
         }
 
         //  将滤波后的点云放置到mvPlanePoints中，在我的理解可能是以此来代表平面的大小
-        mvBoundaryPoints.push_back(*coarseCloud);
-        mvPlanePoints.push_back(*coarseCloud);
-        mvPlaneCoefficients.push_back(coef);
+        mvBoundaryPoints.push_back(*coarseCloud);   //面边界上的点云
+        mvPlanePoints.push_back(*coarseCloud);      //平面的点云
+        mvPlaneCoefficients.push_back(coef);        //平面的系数Mat(x y z d)
     }
     cloud.vertices.clear();
     seg_img_.release();
@@ -463,6 +467,7 @@ void Frame::ComputePlanesFromPEAC(const cv::Mat &imDepth)
 
 // add plane end -----------------------------
 
+//mono
 Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth)
     :mpORBvocabulary(voc),mpORBextractorLeft(extractor),mpORBextractorRight(static_cast<ORBextractor*>(NULL)),
      mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth)

@@ -398,7 +398,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB, const cv::Mat &imD, const 
                           mK,
                           mDistCoef,
                           mbf,
-                          mThDepth,
+                          mThDepth,  //Depth Threshold
                           mImGray,
                           rawImage);
 

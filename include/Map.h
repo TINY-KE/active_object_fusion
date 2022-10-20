@@ -109,7 +109,7 @@ protected : std::set<MapPoint *> mspMapPoints;
     // add plane -------------------------------
     float mfDisTh;
     float mfAngleTh;
-    std::set<MapPlane*> mspMapPlanes;
+    std::set<MapPlane*> mspMapPlanes;   //用于存储 地图中的平面特征
     std::vector<long unsigned int> mvnRemovedPlanes;
 
     std::set<MapPoint*> mvpObjectMapPoints;

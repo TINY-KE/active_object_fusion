@@ -72,6 +72,7 @@ struct ImagePointCloud
 
     inline int width() const { return w; }
     inline int height() const { return h; }
+    // zhangjiadong: 返回(row,col)像素对应的point的3D坐标???
     inline bool get(const int row, const int col, double &x, double &y, double &z) const
     {
         const int pixIdx = row * w + col;
@@ -134,7 +135,7 @@ public:
             const float &bf,
             const float &thDepth,
             cv::Mat& grayimg,
-            cv::Mat& rgbimg);
+            cv::Mat& rgbimg);  //TODO: 怎么感觉这个没用到??  c文件里面还多了一个rgbd的frame的构造函数
 
     // Extract ORB on the image. 0 for left image and 1 for right image.
     void ExtractORB(int flag, const cv::Mat &im);
@@ -236,7 +237,7 @@ public:
     std::vector<Object_2D*> mvLastLastObjectFrame;  // last last frame.
     bool AppearNewObject = false;                   // Whether new objects appear in the current frame.
 
-    // Number of KeyPoints.
+    // Number of KeyPoints.   当前帧frame中的特征点的数量
     int N;
 
     // Vector of keypoints (original for visualization) and undistorted (actually used by the system).
@@ -301,11 +302,11 @@ public:
     typedef pcl::PointXYZRGB PointT;
     typedef pcl::PointCloud<PointT> PointCloud;
 
-    std::vector<PointCloud> mvPlanePoints;
-    std::vector<PointCloud> mvBoundaryPoints;
-    std::vector<cv::Mat> mvPlaneCoefficients;
-    std::vector<MapPlane *> mvpMapPlanes;
-    std::vector<bool> mvbPlaneOutlier;
+    std::vector<PointCloud> mvPlanePoints;      //平面的点云
+    std::vector<PointCloud> mvBoundaryPoints;   //面边界上的点云
+    std::vector<cv::Mat> mvPlaneCoefficients;   //平面的系数Mat
+    std::vector<MapPlane *> mvpMapPlanes; 
+    std::vector<bool> mvbPlaneOutlier; 
     int mnPlaneNum;
     int mnRealPlaneNum;
     bool mbNewPlane; // used to determine a keyframe

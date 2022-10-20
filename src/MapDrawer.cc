@@ -521,7 +521,7 @@ void MapDrawer::GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M)
     else
         M.SetIdentity();
 }
-
+// zhang 没用到?
 void MapDrawer::DrawMapPlanes(){
     pcl::VoxelGrid<PointT> voxel;
     voxel.setLeafSize(0.05, 0.05, 0.05);
@@ -588,7 +588,7 @@ void MapDrawer::DrawMapPlanesOld()
     glBegin(GL_POINTS);
     pcl::VoxelGrid<PointT> voxel;
     voxel.setLeafSize(0.02, 0.02, 0.02);
-    for (auto pMP : vpMPs)
+    for (auto pMP : vpMPs)  //对vpMPs中每个平面pMP分别进行处理,
     {
         map<KeyFrame *, int> observations = pMP->GetObservations();
         float ir = pMP->mRed;
