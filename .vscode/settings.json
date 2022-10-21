@@ -60,6 +60,7 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "forward_list": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "core": "cpp"
     }
 }

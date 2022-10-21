@@ -5,7 +5,7 @@
 #include "EdgePlane.h"
 
 namespace g2o {
-    EdgePlane::EdgePlane(){
+    EdgePlane::EdgePlane() {
 
     }
 
@@ -13,21 +13,23 @@ namespace g2o {
         Vector4D v;
         is >> v(0) >> v(1) >> v(2) >> v(3);
         setMeasurement(Plane3D(v));
-        for (int i = 0; i < information().rows(); ++i)
-            for (int j = i; j < information().cols(); ++j) {
-                is >> information()(i, j);
-                if (i != j)
-                    information()(j, i) = information()(i, j);
+        for(int i = 0; i< information().rows();  ++i){
+            for(int j=i; i<information().cols(); ++j ){
+                is >> information()(i,j);
+                if( i != j ){
+                    information()(j,i ) = information() (i,j);
+                }
             }
-        return true;
+        }
+        return  true;
     }
 
-    bool EdgePlane::write(std::ostream &os) const {
+    bool EdgePlane::write(std::ostream &os) const{
         Vector4D v = _measurement.toVector();
-        os << v(0) << " " << v(1) << " " << v(2) << " " << v(3) << " ";
-        for (int i = 0; i < information().rows(); ++i)
-            for (int j = i; j < information().cols(); ++j)
-                os << " " << information()(i, j);
+        os << v(0) << " " << v(1) << " " << v(2) << " " << v(3)<< " ";
+        for(int i =0; i < information().rows(); ++i)
+            for( int j= i; j < information().cols() ; ++j  )
+                os << " " << information()(i,j);
         return os.good();
     }
 }

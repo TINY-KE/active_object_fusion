@@ -214,10 +214,10 @@ void Optimizer::BundleAdjustment(
         if (pMP->isBad())
             continue;
         g2o::VertexPlane *vPlane = new g2o::VertexPlane();
-        vPlane->setEstimate(Converter::toPlane3D(pMP->GetWorldPos()));
-        int id = pMP->mnId + maxMPid + 1;
+        vPlane->setEstimate(Converter::toPlane3D(pMP->GetWorldPos()));   //设置平面的观测值
+        int id = pMP->mnId + maxMPid + 1 ;
         vPlane->setId(id);
-        vPlane->setMarginalized(true);
+        vPlane->setMarginalized(true);   // 设置边缘化
         optimizer.addVertex(vPlane);
         if (id > maxMPlid)
             maxMPlid = id;

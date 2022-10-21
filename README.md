@@ -12,7 +12,7 @@
 + 编写gazebo的自主仿真模型.
 + 如何去除的真值约束? 对比加上和不加垂直方向的初始约束的效果；
 + 重写plane的优化.平面的系数转到世界坐标系下是H^{-T}``
-+ 
++ virtual void setToOriginImpl() { _estimate = Plane3D() ;}   //?????
 
 ``
 **已完成部分：**
@@ -26,7 +26,7 @@
 + 
 
 
-**未来想进行的修改：**
+**未来想进行的修改 和 学习的内容：**
 
 + 运行tum数据集中的long_office，会报错。还没找到问题所在，是否与amd的cpu有关（在旧intel笔记本上没有这个bug）。可以尝试从gcc编译flag、c++版本、eigen版本等方面，试一试。
 + 有时候相机会卡死, 推测可能是message_filters::Synchronizer的问题. 重启相机后,可修复.
@@ -35,7 +35,9 @@
 + plane在loop close中是怎么起作用的??  发现和point是一样的,连变量名字都是一样的.  https://blog.csdn.net/YGG12022/article/details/124958961 . 
 + plane在回环检测和优化中,起到了重要作用, 因此我们把这个平面也作为一个重要的观测对象.
 + PEAC方法中,深度信息只用了0.2~4之间.是否妥当
-+ 
++ mspMapPlanes中的平面 是什么时候添加进去的?
++ 特征点的UpdateNormalAndDepth 是什么用法??
++ 平面的误差函数  是怎么构建的????
 
 ### 2 知识学习
 + PEAC平面提取方法介绍 --- ComputePlanesFromPEAC(const cv::Mat &imDepth)
@@ -46,7 +48,18 @@
   + 根据plane_vertices_中的像素索引, 从icloud中提取点云:   icloud --> inputCloud
   + 利用pcl::VoxelGrid对inputCloud,进行体素化的下采样:  inputCloud -->  dcoarseCloud
   + 将平面的点云信息dcoarseCloud, 添加进frame的mvPlanePoints中.   平面的法向量和坐标coef,添加进frame的mvPlaneCoefficients中
-+ 
++ 平面参与优化 --- https://blog.csdn.net/supengufo/article/details/105846129
+  + 读取地图或者临近帧的平面: vector<MapPlane *> vpMPl = pMap->GetAllMapPlanes();
+  + 误差函数的构建:
+    + 
+  + 构建g2o的因子图:
+    + 将vpMPl[i],添加为构建g2o中的点 VertexPlane.
+    + 将vpMPl[i]->GetObservations()->first ,即观测到此平面的关键帧, 添加为g2o中的点. [这一步其实已经在BundleAdjustment的关键帧处理部分,已经完成了]
+    + 添加边: optimizer.addEdge(edge);
+    + 正式开始优化 optimizer.optimize(nIterations);
+    + 将优化的结果, 赋值给plane. 
+  + 
++ 虚函数: 指向基类的指针在操作它的多态类对象时，会根据不同的类对象，调用其相应的函数，这个函数就是虚函数。
 
 ### 3 环境构建
 
