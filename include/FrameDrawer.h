@@ -54,11 +54,17 @@ protected:
 
     cv::Mat DrawYoloInfo(cv::Mat &im, bool bText = true);
 
-	std::vector<cv::Scalar> colors = {  cv::Scalar(0,0,255),
-                                        cv::Scalar(0,255,0),
-                                        cv::Scalar(255,0,0),
-                                        cv::Scalar(0,255,255)
-                                        };
+//	std::vector<cv::Scalar> colors = {  cv::Scalar(0,0,255),
+//                                        cv::Scalar(0,255,0),
+//                                        cv::Scalar(255,0,0),
+//                                        cv::Scalar(0,255,255)
+//                                        };
+    std::vector<cv::Scalar> colors = {  cv::Scalar(135,0,248),
+                                        cv::Scalar(255,0,253),
+                                        cv::Scalar(4,254,119),
+                                        cv::Scalar(255,126,1),
+                                        cv::Scalar(0,112,255),
+                                        cv::Scalar(0,250,250),    };
 
     std::vector<std::string> class_names = {
                                         "person",

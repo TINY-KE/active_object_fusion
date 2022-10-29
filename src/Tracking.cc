@@ -22,6 +22,7 @@
 #include "Initializer.h"
 #include "Optimizer.h"
 #include "PnPsolver.h"
+#include "MapPublisher.h"  //[rviz]
 
 #include <iostream>
 
@@ -576,6 +577,16 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB, const cv::Mat &imD, const 
         cv_mat_32f.convertTo(mCurrentFrame.mGroundtruthPose_mat, CV_32F);
     }else{   //miConstraintType == 0 .位姿设置为0. 那么怎么办呢??
         mCurrentFrame.mGroundtruthPose_mat = cv::Mat::eye(4, 4, CV_32F);
+//        mCurrentFrame.mGroundtruthPose_mat =
+        Eigen::Quaterniond quaternion(Vector4d(-0.506, 0.507, -0.493, 0.494));
+        Eigen::AngleAxisd rotation_vector(quaternion);
+        Eigen::Isometry3d T = Eigen::Isometry3d::Identity();
+        T.rotate(rotation_vector);
+        T.pretranslate(Eigen::Vector3d(0.008, -0.032, 1.145));
+        mCurrentFrame.mGroundtruthPose_eigen = T.matrix();
+        cv::Mat cv_mat_32f;
+        cv::eigen2cv(mCurrentFrame.mGroundtruthPose_eigen, cv_mat_32f);
+        cv_mat_32f.convertTo(mCurrentFrame.mGroundtruthPose_mat, CV_32F);
     }
     // get the camera groundtruth by timestamp. ----------------------------------------------------------------------
     Track();
@@ -1996,7 +2007,7 @@ bool Tracking::TrackWithMotionModel()
     // STEP 9. Initialize the object map  *
     // ************************************
     // if ((mCurrentFrame.mnId > mInitialSecendFrame.mnId) && mbObjectIni == false)
-    //     InitObjMap(objs_2d);
+    //     Init。。。。ObjMap(objs_2d);
     if ( mbObjectIni == false){
         InitObjMap(objs_2d);
     }
@@ -3038,7 +3049,7 @@ void Tracking::AssociateObjAndPoints(vector<Object_2D *> objs_2d)
 
 
 
-// BRIEF [EAO] Initialize the object map.
+// BRIEF [EAO] Initialize the object map.   zhangjiadong: 用于trackWithMotionModel()
 void Tracking::InitObjMap(vector<Object_2D *> objs_2d)
 {
     // notes：一个obj对应一个objMAP

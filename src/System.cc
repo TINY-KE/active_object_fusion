@@ -26,6 +26,7 @@
 #include <pangolin/pangolin.h>
 #include <iomanip>
 
+
 // #include "include/Semantic.h"       // [EAO] online yolo.
 
 bool has_suffix(const std::string &str, const std::string &suffix) {
@@ -94,6 +95,7 @@ System::System(const string &strVocFile, const string &strSettingsFile,
     //Create Drawers. These are used by the Viewer
     mpFrameDrawer = new FrameDrawer(mpMap);
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
+//    mpMapPublisher = new MapPublisher(mpMap);  //[rviz]
 
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
@@ -364,7 +366,30 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
     f.close();
     cout << endl << "trajectory saved!" << endl;
 }
+void System::SavePlaneFeatures(const string &filename) {
+    cout << endl << "Saving Plane Features to " << filename << " ..." << endl;
 
+    vector<MapPlane*> vMPs = mpMap->GetAllMapPlanes();
+
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+
+    for(size_t i=0; i<vMPs.size(); i++)
+    {
+        MapPlane* plane = vMPs[i];
+
+        if(plane->isBad())
+            continue;
+
+        cv::Mat p = plane->GetWorldPos();
+        f << setprecision(6) << p.at<float>(0, 0) << " " << p.at<float>(1, 0) << " " << p.at<float>(2, 0) << " " << p.at<float>(3, 0) << endl;
+    }
+
+    f.close();
+    cout << endl << "Plane features saved!" << endl;
+
+}
 void System::SaveTrajectoryKITTI(const string &filename)
 {
     cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;

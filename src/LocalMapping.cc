@@ -70,7 +70,7 @@ void LocalMapping::Run()
 
             if(!CheckNewKeyFrames() && !stopRequested())
             {
-                // Local BA
+                // Local BA    zhangjiadong: 只有这一个BA是应用在localmapping中;其他的poseBA, globalBA是应用在tracker中;OptimizeEssentialGraph,OptimizeSim3应用在回环中.
                 if(mpMap->KeyFramesInMap()>2)
                     Optimizer::LocalBundleAdjustment(mpCurrentKeyFrame,&mbAbortBA, mpMap);
 

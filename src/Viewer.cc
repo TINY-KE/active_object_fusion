@@ -24,6 +24,8 @@ Viewer::Viewer( System* pSystem, FrameDrawer *pFrameDrawer,
     mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),mpMapDrawer(pMapDrawer), mpTracker(pTracking),
     mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false), mflag(flag)
 {
+    mpMapPub = new MapPublisher(pMapDrawer -> mpMap); //[rviz]
+    mpMapPub -> CurrentCameraPose = &(pMapDrawer->mCameraPose); //[rviz]  TODO: 很丑陋的实现方法，最好是把MapPublisher的指针传入到tracker中，直接修改mpMapPub -> CurrentCameraPose【在init和track时】
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
     float fps = fSettings["Camera.fps"];
@@ -49,15 +51,19 @@ Viewer::Viewer( System* pSystem, FrameDrawer *pFrameDrawer,
     mcx = fSettings["Camera.cx"];
     mcy = fSettings["Camera.cy"];
 
+    run_pangolin = fSettings["Viewer.pangolin"];
+    run_rviz = fSettings["Viewer.rviz"];
 }
 
 void Viewer::Run()
 {
     mbFinished = false;
 
-    // pangolin::CreateWindowAndBind("ORB-SLAM2: Map Viewer",1024,768);
-    pangolin::CreateWindowAndBind("ORB-SLAM2: Map Viewer",1200, 900);   // 1920,1080.
-    // pangolin::CreateWindowAndBind("ORB-SLAM2: Map Viewer",mImageWidth+175,mImageHeight);
+    if(run_pangolin)
+        pangolin::CreateWindowAndBind("Object Map Viewer",1200, 900);   // 1920,1080.
+    else
+        pangolin::CreateWindowAndBind("Object Map Viewer",12, 9);
+        // pangolin::CreateWindowAndBind("ORB-SLAM2: Map Viewer",mImageWidth+175,mImageHeight);
 
     // 3D Mouse handler requires depth testing to be enabled
     glEnable(GL_DEPTH_TEST);
@@ -79,6 +85,7 @@ void Viewer::Run()
 
     pangolin::Var<bool> menuLocalizationMode("menu.Localization Mode",false,true);
     pangolin::Var<bool> menuReset("menu.Reset",false,false);
+
 
 
     // add plane
@@ -121,70 +128,78 @@ void Viewer::Run()
 
     while(1)
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if(run_rviz)
+            mpMapPub -> Refresh();   //[rviz]
 
-        mpMapDrawer->GetCurrentOpenGLCameraMatrix(Twc);
 
-        if(menuFollowCamera && bFollow)
-        {
-            s_cam.Follow(Twc);
-        }
-        else if(menuFollowCamera && !bFollow)
-        {
-            s_cam.Follow(Twc);
-            bFollow = true;
-        }
-        else if(!menuFollowCamera && bFollow)
-        {
-            bFollow = false;
+        if(run_pangolin){
+            //pangolin
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            mpMapDrawer->GetCurrentOpenGLCameraMatrix(Twc);    //[rviz]  Twc是怎么获得的??  可用在rviz的当前帧显示中.
+
+            if(menuFollowCamera && bFollow)
+            {
+                s_cam.Follow(Twc);
+            }
+            else if(menuFollowCamera && !bFollow)
+            {
+                s_cam.Follow(Twc);
+                bFollow = true;
+            }
+            else if(!menuFollowCamera && bFollow)
+            {
+                bFollow = false;
+            }
+
+            if(menuLocalizationMode && !bLocalizationMode)
+            {
+                mpSystem->ActivateLocalizationMode();
+                bLocalizationMode = true;
+            }
+            else if(!menuLocalizationMode && bLocalizationMode)
+            {
+                mpSystem->DeactivateLocalizationMode();
+                bLocalizationMode = false;
+            }
+
+            // carv: setup viewpoint to see model
+            if(menuCameraView && !bCameraView)
+            {
+                s_cam.SetProjectionMatrix(projectionCamera);
+                s_cam.SetModelViewMatrix(viewCamera);
+                bCameraView = true;
+            }
+            else if(!menuCameraView && bCameraView)
+            {
+                s_cam.SetProjectionMatrix(projectionAbove);
+                s_cam.SetModelViewMatrix(viewAbove);
+                bCameraView = false;
+            }
+
+            d_cam.Activate(s_cam);
+            glClearColor(1.0f,1.0f,1.0f,1.0f);
+            if(menuShowCamera)
+                mpMapDrawer->DrawCurrentCamera(Twc);
+            if(menuShowKeyFrames || menuShowGraph)
+                mpMapDrawer->DrawKeyFrames(menuShowKeyFrames,menuShowGraph);
+            if(menuShowPoints)
+                mpMapDrawer->DrawMapPoints();
+
+            // step draw objects.
+            if( menuShowQuadricObj)
+            {
+                mpMapDrawer->DrawObject(menuShowQuadricObj,
+                                        mflag);
+            }
+            // add plane
+            if (menuShowPlanes)
+                mpMapDrawer->DrawMapPlanesOld();
+            // add plane end
+
+            pangolin::FinishFrame();
         }
 
-        if(menuLocalizationMode && !bLocalizationMode)
-        {
-            mpSystem->ActivateLocalizationMode();
-            bLocalizationMode = true;
-        }
-        else if(!menuLocalizationMode && bLocalizationMode)
-        {
-            mpSystem->DeactivateLocalizationMode();
-            bLocalizationMode = false;
-        }
-
-        // carv: setup viewpoint to see model
-        if(menuCameraView && !bCameraView)
-        {
-            s_cam.SetProjectionMatrix(projectionCamera);
-            s_cam.SetModelViewMatrix(viewCamera);
-            bCameraView = true;
-        }
-        else if(!menuCameraView && bCameraView)
-        {
-            s_cam.SetProjectionMatrix(projectionAbove);
-            s_cam.SetModelViewMatrix(viewAbove);
-            bCameraView = false;
-        }
-
-        d_cam.Activate(s_cam);
-        glClearColor(1.0f,1.0f,1.0f,1.0f);
-        if(menuShowCamera)
-            mpMapDrawer->DrawCurrentCamera(Twc);
-        if(menuShowKeyFrames || menuShowGraph)
-            mpMapDrawer->DrawKeyFrames(menuShowKeyFrames,menuShowGraph);
-        if(menuShowPoints)
-            mpMapDrawer->DrawMapPoints();
-
-        // step draw objects.
-        if( menuShowQuadricObj)
-        {
-            mpMapDrawer->DrawObject(menuShowQuadricObj,
-                                    mflag);
-        }
-        // add plane
-        if (menuShowPlanes)
-            mpMapDrawer->DrawMapPlanesOld();
-        // add plane end
-
-        pangolin::FinishFrame();
 
         // gray image.
         cv::Mat im = mpFrameDrawer->DrawFrame();
@@ -213,7 +228,7 @@ void Viewer::Run()
             cv::imshow("Quadric Projection", resizeimg);
         }
 
-        cv::waitKey(mT);
+
 
         if(menuReset)
         {
@@ -236,6 +251,9 @@ void Viewer::Run()
             mpSystem->Reset();
             menuReset = false;
         }
+
+
+        cv::waitKey(mT);
 
         if(Stop())
         {

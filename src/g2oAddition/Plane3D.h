@@ -82,14 +82,14 @@ namespace g2o {
                 normalize(_coeffs);
             }
 
-            inline Vector3D ominus(const Plane3D& plane){
+            inline Vector3D ominus(const Plane3D& plane){  //TODO: plane是在全局的平面??
                 //construct the rotation that would bring the plane normal in (1 0 0)
                 // 法向量转换为旋转向量 再转置，与顶点的平面旋转部分相乘
-                Matrix3D R = rotation(normal()).transpose();
-                Vector3D n = R * plane.normal();
-                // 距离直接相减即可
-                double d=distance()-plane.distance();
-                return Vector3D(azimuth(n), elevation(n), d);
+                Matrix3D R = rotation(normal()).transpose();  //转置
+                Vector3D n = R * plane.normal();   //将Pi转换到以Pw′为基底的旋转空间中去，得到向量n
+                // 距离直接相减即可.  zhangjiadong: 两个平面平不是平行的, 但是为了简单处理, 直接距离相减, 求取d
+                double d=distance()-plane.distance();  //计算d = Dw′ − Di
+                return Vector3D(azimuth(n), elevation(n), d);  //对n计算仰角azimuth和方位角elevation
             }
 
             inline Vector2D ominus_ver(const Plane3D& plane){

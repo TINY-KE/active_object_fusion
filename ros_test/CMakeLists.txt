@@ -216,6 +216,12 @@ add_library(${PROJECT_NAME}_lib SHARED
     ../src/Viewer.cc
     ../src/Object.cc      # NOTE [EAO-SLAM]
 
+    #rviz
+    ../src/MapPublisher.cc
+#    ../src/FramePublisher.cc
+#1.添加MapPublisher类和配置Rviz，并在每次Track之后利用MapPublisher类发布可视化信息，这里可以直接复用ORB-SLAM中的MapPublisher类和Rviz。
+#2.为Map类添加返回相关信息的接口。
+
 
     # ros
     src/message_flow.cc

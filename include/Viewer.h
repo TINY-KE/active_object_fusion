@@ -34,7 +34,7 @@
 #include "MapDrawer.h"
 #include "Tracking.h"
 #include "System.h"
-
+#include "MapPublisher.h"  //[rviz]
 #include <mutex>
 
 namespace ORB_SLAM2
@@ -44,6 +44,7 @@ class Tracking;
 class FrameDrawer;
 class MapDrawer;
 class System;
+class MapPublisher;
 
 class Viewer
 {
@@ -73,7 +74,7 @@ private:
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
     Tracking* mpTracker;
-
+    MapPublisher* mpMapPub;
     // 1/fps in ms
     double mT;
     float mImageWidth, mImageHeight;
@@ -90,6 +91,9 @@ private:
     bool mbStopped;
     bool mbStopRequested;
     std::mutex mMutexStop;
+
+    int run_pangolin;
+    int run_rviz;
 
     // demo.
     string mflag;

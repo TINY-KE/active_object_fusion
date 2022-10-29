@@ -66,9 +66,9 @@ private:
     float mPointSize;
     float mCameraSize;
     float mCameraLineWidth;
-
+public:
     cv::Mat mCameraPose;
-
+private:
     std::mutex mMutexCamera;
 
     std::string frontPath;

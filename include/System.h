@@ -106,7 +106,7 @@ public:
     // Call first Shutdown()
     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
     void SaveKeyFrameTrajectoryTUM(const string &filename);
-
+    void SavePlaneFeatures(const string &filename);
     // Save camera trajectory in the KITTI dataset format.
     // Call first Shutdown()
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
@@ -144,7 +144,7 @@ private:
 
     // The viewer draws the map and the current camera pose. It uses Pangolin.
     Viewer* mpViewer;
-
+//    MapPublisher* mpMapPublisher;
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
 

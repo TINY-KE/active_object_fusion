@@ -161,9 +161,9 @@ namespace ORB_SLAM2
             cv::Rect mLastLastRect;
             cv::Rect mPredictRect;
             cv::Rect mRectProject;
-            int mnId;
+            int mnId;   //全局的id
             int mnClass;
-            int mnConfidence;
+            int mnConfidence; // zhangjiaddong:  等于 被多少帧看到.  那岂不是等于mObjectFrame.size()
             bool mbFirstObserve;
             int mnAddedID;
             int mnLastAddID;
@@ -182,7 +182,7 @@ namespace ORB_SLAM2
             std::map<int, int> mReObj;          // potential associated objects.
             std::map<int, int> mmAppearSametime;// object id and times simultaneous appearances .
 
-            bool bBadErase = false;
+            bool bBadErase = false;    //zhangjiadong  用途：（1）如果为true，则不view  （2）在localMapping、 等地方，应用
 
             Cuboid3D mCuboid3D;                  // cuboid.
             vector<cv::Mat> mvPointsEllipsoid;   // not used.

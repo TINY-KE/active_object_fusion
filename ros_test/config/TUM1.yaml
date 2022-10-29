@@ -69,6 +69,10 @@ Viewer.ViewpointX: 0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
+
+Viewer.pangolin: 0
+Viewer.rviz: 1
+
 #--------------------------------------------------------------------------------------------
 # Plane Extraction Parameters
 #--------------------------------------------------------------------------------------------

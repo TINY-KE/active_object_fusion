@@ -85,7 +85,38 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
+Viewer.pangolin: 0
+Viewer.rviz: 1
 
 # pcl pointcloud mapping
 PointCloudMapping.Resolution: 0.01
 
+#--------------------------------------------------------------------------------------------
+# Plane Optimization Parameters
+#--------------------------------------------------------------------------------------------
+Plane.AssociationDisRef: 0.2
+Plane.AssociationDisMon: 0.2
+Plane.AssociationAngRef: 0.8 # 30 degree
+Plane.AssociationAngMon: 0.8 # 30 degree
+Plane.VerticalThreshold: 0.08716 # 85 degree
+Plane.ParallelThreshold: 0.9962 # 5 degree
+Plane.AngleInfo: 1
+Plane.DistanceInfo: 100
+Plane.Chi: 300
+Plane.VPChi: 300
+Plane.ParallelInfo: 0.5
+Plane.VerticalInfo: 0.5
+
+#--------------------------------------------------------------------------------------------
+# Supposed Plane Extraction Parameters
+#--------------------------------------------------------------------------------------------
+#Line.Ratio: 0.2
+#Line.DistanceThreshold: 0.01
+#Plane.ShowSPlane: 1
+
+#--------------------------------------------------------------------------------------------
+# Result File Paths
+#--------------------------------------------------------------------------------------------
+#SavePath.Frame: "FrameTrajectory.txt"
+#SavePath.Keyframe: "KeyFrameTrajectory.txt"
+#SavePath.PlaneFeature: "PlaneFeature.txt"

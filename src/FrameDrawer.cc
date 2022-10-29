@@ -234,7 +234,7 @@ cv::Mat FrameDrawer::DrawYoloInfo(cv::Mat &im, bool bText)
         // draw bounding box.
         cv::rectangle(  im,
                         box,
-                        colors[box.m_class%4],
+                        colors[box.m_class%6],
                         2);
 
         // cv::putText( im, text, cv::Point(x, y + label_size.height),

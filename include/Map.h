@@ -82,7 +82,7 @@ public:
     // This avoid that two points are created simultaneously in separate threads (id conflict)
     std::mutex mMutexPointCreation;
 
-    vector<Object_Map*> mvObjectMap;    // objects in the map.
+    vector<Object_Map*> mvObjectMap;    //地图中, 三维物体的集合 // objects in the map.
     vector<cv::Mat> cube_center;
 
     // add plane -------------------------------

@@ -208,6 +208,7 @@ void Optimizer::BundleAdjustment(
     const float VPdeltaPlane = sqrt(VPplaneChi);
 
     //Set MapPlane vertices
+    // zhangjiadong  比较 有平面和无平面的区别
     for (size_t i = 0; i < vpMPl.size(); i++)
     {
         MapPlane *pMP = vpMPl[i];
@@ -240,7 +241,7 @@ void Optimizer::BundleAdjustment(
                 Info << angleInfo, 0, 0,
                     0, angleInfo, 0,
                     0, 0, disInfo;
-                e->setInformation(Info);
+                e->setInformation(Info); //TODO:  为什么会有区别 ？？
                 g2o::RobustKernelHuber *rk = new g2o::RobustKernelHuber;
                 e->setRobustKernel(rk);
                 rk->setDelta(deltaPlane);
@@ -467,7 +468,7 @@ int Optimizer::PoseOptimization(Frame *pFrame)
     double VPplaneChi = 300;
     const float deltaPlane = sqrt(planeChi);
     const float VPdeltaPlane = sqrt(VPplaneChi);
-
+// zhangjiadong  比较 有平面和无平面的区别
     {
         unique_lock<mutex> lock(MapPlane::mGlobalMutex);
         int PNum = 0;
@@ -1108,7 +1109,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
         g2o::VertexSE3Expmap* vSE3 = static_cast<g2o::VertexSE3Expmap*>(optimizer.vertex(pKF->mnId));
         g2o::SE3Quat SE3quat = vSE3->estimate();
         pKF->SetPose(Converter::toCvMat(SE3quat));
-
+        std::cout<<"[rviz Optimizer debug] frame id： "<< pKF ->mnId <<", Tcw:"<<pKF -> GetPose() << std::endl;
         //carv: add KeyFrame to set
         sBAKF.insert(pKF);
     }

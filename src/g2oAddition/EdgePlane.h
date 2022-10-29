@@ -32,14 +32,15 @@ namespace g2o {
          EdgePlane();
 
          void computeError(){
-             const VertexSE3Expmap* poseVertex = static_cast<const VertexSE3Expmap*>( _vertices[1]);
-             const VertexPlane* planeVertex = static_cast<const VertexPlane*>( _vertices[0]);
+            const VertexSE3Expmap* poseVertex = static_cast<const VertexSE3Expmap*>( _vertices[1]);
+            const VertexPlane* planeVertex = static_cast<const VertexPlane*>( _vertices[0]);
 
-             const Plane3D& plane = planeVertex->estimate() ;
-             Isometry3D w2n = poseVertex->estimate()  ;
-            Plane3D localPlane = w2n*plane;
+            const Plane3D& plane = planeVertex->estimate() ;
+            Isometry3D w2n = poseVertex->estimate()  ;
+            Plane3D localPlane = w2n*plane;    //世界坐标系下的平面Pw  投影到第i帧坐标系下, 得到平面Pi
 
-            _error = localPlane.ominus(_measurement); /*???*/
+
+             _error = localPlane.ominus(_measurement); // 在第i帧坐标系下进行平面方程的误差构建,其中 _measurement是在第i帧中匹配到的平面
          }
 
          void setMeasurement( const Plane3D& m){
@@ -61,7 +62,7 @@ namespace g2o {
 
          virtual bool write(std::ostream& os) const;  // const代表常成员函数,即只读”函数
 
-
+        // G2O_MAKE_AUTO_AD_FUNCTIONS
     };
 }
 

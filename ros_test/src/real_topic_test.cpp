@@ -87,7 +87,7 @@ int main(int argc, char **argv)
     string yamlfile, sensor; bool semanticOnline, rosBagFlag;
     const std::string VocFile = WORK_SPACE_PATH + "/Vocabulary/ORBvoc.bin";
     // const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/D435i.yaml";
-    ros::param::param<std::string>("~yamlfile", yamlfile, "kinectdk.yaml"); /*TUM3.yaml TUM3_ros.yaml kinectdk_720.yaml*/
+    ros::param::param<std::string>("~yamlfile", yamlfile, "TUM3_ros.yaml"); /*kinectdk.yaml  TUM3.yaml TUM3_ros.yaml kinectdk_720.yaml*/
     const std::string YamlFile = WORK_SPACE_PATH + "/ros_test/config/" + yamlfile;
     // 读取launch文件中的参数
     ros::param::param<std::string>("~sensor", sensor, "RGBD");
@@ -113,7 +113,9 @@ int main(int argc, char **argv)
     
     ros::spin();
     ros::shutdown();
-
+    // Save camera trajectory
+    system_ptr->SaveKeyFrameTrajectoryTUM("/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/CameraTrajectory.txt");
+    system_ptr->SavePlaneFeatures("/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/PlaneFeature.txt");
     return 0;
 }
 std::vector<BoxSE> darknetRosMsgToBoxSE(std::vector<darknet_ros_msgs::BoundingBox>& boxes){
