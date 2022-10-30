@@ -20,7 +20,7 @@ result_associate/
 ./vscode/
 data/yolo_txts/
 cubeslam_results/*.png
-
+ros_test/cmake-build-debug
 # Prerequisites
 *.d
 

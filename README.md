@@ -5,13 +5,12 @@
 ### 1 过程记录
 ``
 **TODO：**
-
 + 在实际场景中尝试:
   + 前景物体：鼠标,笔记本,椅子,
   + 背景物体：桌子,
-+ 雷达地图和roseao的融合
 
-+ 将cartographer和物体建图融合
++ 周日：
++ 将cartographer的相机位姿，作为物体建图的相机初始位姿
   + tf变换
   + 雷达的位姿, 作为rgbd相机的初始位姿.
     + 通过时间戳, 匹配相机的位姿
@@ -19,12 +18,15 @@
     + virtual void setToOriginImpl() { _estimate = Plane3D() ;}   //?????
     + optimizer.initializeOptimization(0); ?
   + 根据tf和雷达位姿, 生成相机的位姿, 一同输入进system中.
+  + 视觉里程计里面的:  mCurrentFrame.SetPose(mLastFrame.mTcw);  为什么位姿设置的是上一帧的位姿.
+    + 通过这个函数，输入每一帧的初始位姿
 
+  + 
++ 关键1：NBV物体概率地图 
+  + 编写gazebo的自主仿真模型. ￥￥￥￥
++ 关键2：学习 特征点聚类的算法，并结合到nbv中
++ 关键3：跑一遍雷达和相机的联合建图，用于周五的展示
 
-+ 编写gazebo的自主仿真模型. ￥￥￥￥
-+ 
-+ 视觉里程计里面的:  mCurrentFrame.SetPose(mLastFrame.mTcw);  为什么位姿设置的是上一帧的位姿
-+ pKFini->SetPose(pKFini->GetPose() * GroundToInit);   根据这条语句, 说明初始帧的位姿 是相对于地面的.
 + 转变成release，能不能解决molloc内存泄露的问题
 
 
@@ -41,7 +43,10 @@
   + 平面信息的格式: 中心坐标三维, 法向量三维
   + 物体信息的格式:
 + 在rviz中可视化： 物体及内部的特征点、相机、关键帧、共视图、特征点、~~平面~~，topic为/objectmap
-+ 
++ FABO移动平台的导航调试：
+  + 全局路径规划voronoi_planner。 存在路径规划失败导致程序崩溃的bug， 可以试试Hybrd A*（https://blog.csdn.net/qq_42568675/article/details/116116994  https://github.com/dengpw/hybrid_astar_planner）试试
+  + 局部路径规划teb_planner.  机器人倒车时，可能配到障碍物。
+  + 通信频率10会崩溃， 尝试wifi能否解决问题
 + 
 
 **未来想进行的修改 和 学习的内容：**
