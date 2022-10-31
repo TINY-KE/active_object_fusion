@@ -111,11 +111,14 @@ public:
     // Call first Shutdown()
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
     void SaveTrajectoryKITTI(const string &filename);
-
+    void SaveObjectsToFile(std::string &path);
+    void SaveObject(const string &filename);
+//    MatrixXd GetObjects();
+//    bool saveMatToFile(Eigen::MatrixXd &matIn, const char* fileName);
     // TODO: Save/Load functions
     // SaveMap(const string &filename);
     // LoadMap(const string &filename);
-
+    void    SaveMapPoint( ofstream &f, MapPoint* mp );
 private:
 
     // Input sensor

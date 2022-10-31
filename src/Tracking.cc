@@ -35,6 +35,11 @@
 #include <cmath>
 #include <algorithm>
 
+// cube slam
+#include "detect_3d_cuboid/matrix_utils.h"
+#include "detect_3d_cuboid/detect_3d_cuboid.h"
+#include "detect_3d_cuboid/object_3d_util.h"
+
 using namespace std;
 
 // Eigen
@@ -166,6 +171,24 @@ Tracking::Tracking( System *pSys, ORBVocabulary *pVoc, FrameDrawer *pFrameDrawer
 
     // demo flag.
     mflag = flag;
+
+    // STEP line detect +++++++++++++++++++++++++++++++++++++++++++
+    bool use_LSD_algorithm = false;
+    bool save_to_imgs = false;
+    bool save_to_txts = false;
+
+    // initial a line detector.
+    int numOfOctave_ = 1;
+    float Octave_ratio = 2.0;
+    line_lbd_ptr = new line_lbd_detect(numOfOctave_, Octave_ratio);
+
+    line_lbd_ptr->use_LSD = use_LSD_algorithm;
+    line_lbd_ptr->save_imgs = save_to_imgs;
+    line_lbd_ptr->save_txts = save_to_txts;
+    // line detect ------------------------------------------------
+
+    // the threshold of removing short line.
+    line_lbd_ptr->line_length_thres = 15;
 
 
     cout << endl
@@ -2133,7 +2156,16 @@ bool Tracking::TrackWithMotionModel()
 
             if (objMap->mnLastAddID < mCurrentFrame.mnId - 5)
                 continue;
-
+            // [估计偏航角] estimate only regular objects.
+            if (((objMap->mnClass == 73) || (objMap->mnClass == 64) || (objMap->mnClass == 65)
+                 || (objMap->mnClass == 66) || (objMap->mnClass == 56)))
+            {
+                // objects appear in current frame.
+                if(objMap->mnLastAddID == mCurrentFrame.mnId)
+                {
+                    SampleObjYaw(objMap);   // note: sample object yaw.
+                }
+            }
             // step 10.7 project quadrics to the image (only for visualization).
             // 除以2得到半轴
             cv::Mat axe = cv::Mat::zeros(3, 1, CV_32F);
@@ -3046,6 +3078,63 @@ void Tracking::AssociateObjAndPoints(vector<Object_2D *> objs_2d)
     }
 } // AssociateObjAndPoints() END -----------------------------------
 
+// BRIEF [EAO] associate objects with lines.
+void Tracking::AssociateObjAndLines(vector<Object_2D *> objs_2d)
+{
+    // all lines in current frame.
+    Eigen::MatrixXd AllLinesEigen = mCurrentFrame.all_lines_eigen;
+
+    // step 1 make sure edges start from left to right.
+    align_left_right_edges(AllLinesEigen);
+
+    for(int i = 0; i < objs_2d.size(); i++)
+    {
+        Object_2D* obj = objs_2d[i];
+
+        // step 2. expand the bounding box.
+        double dLeftExpand = max(0.0, obj->mBox.x - 15.0);
+        double dRightExpand = min(mCurrentFrame.mColorImage.cols, obj->mBox.x + obj->mBox.width + 15);
+        double dTopExpand = max(0.0, obj->mBox.y - 15.0);
+        double dBottomExpand = min(mCurrentFrame.mColorImage.rows, obj->mBox.y + obj->mBox.height + 15);
+        Vector2d ExpanLeftTop = Vector2d(dLeftExpand, dTopExpand);			// lefttop.
+        Vector2d ExpanRightBottom = Vector2d(dRightExpand, dBottomExpand);  // rightbottom.
+
+        // step 3. associate object with lines.
+        Eigen::MatrixXd ObjectLines(AllLinesEigen.rows(),AllLinesEigen.cols());  /* 用来存储  在box中的line */
+        int nInsideLinesNum = 0;
+        for (int line_id = 0; line_id < AllLinesEigen.rows(); line_id++)
+        {
+            // check endpoints of the lines, whether inside the box.
+            if (check_inside_box(   AllLinesEigen.row(line_id).head<2>(),   /*  左端点？ */
+                                    ExpanLeftTop,
+                                    ExpanRightBottom ))
+            {
+                if(check_inside_box(AllLinesEigen.row(line_id).tail<2>(), /*  右端点？ */
+                                    ExpanLeftTop,
+                                    ExpanRightBottom ))
+                {
+                    ObjectLines.row(nInsideLinesNum) = AllLinesEigen.row(line_id);
+                    nInsideLinesNum++;
+                }
+            }
+        }
+
+        // step 4. merge lines.
+        double pre_merge_dist_thre = 20;
+        double pre_merge_angle_thre = 5;
+        double edge_length_threshold = 30;
+        MatrixXd ObjectLinesAfterMerge;
+        merge_break_lines(	ObjectLines.topRows(nInsideLinesNum),
+                              ObjectLinesAfterMerge, 		// output lines after merge.
+                              pre_merge_dist_thre,		// the distance threshold between two line, 20 pixels.
+                              pre_merge_angle_thre, 		// angle threshold between two line, 5°.
+                              edge_length_threshold);		// length threshold, 30 pixels.
+
+        // step 5. save object lines.
+        obj->mObjLinesEigen = ObjectLinesAfterMerge;
+        mCurrentFrame.vObjsLines.push_back(ObjectLinesAfterMerge);
+    }
+} // AssociateObjAndLines() END ----------------------------------.
 
 
 
@@ -3141,6 +3230,259 @@ cv::Point2f Tracking::WorldToImg(cv::Mat &PointPosWorld)
 
     return cv::Point2f(u, v);
 } // WorldToImg(cv::Mat &PointPosWorld) END ------------------------------
+
+
+// BRIEF [EAO] Estimate object orientation.
+void Tracking::SampleObjYaw(Object_Map* objMap)
+{
+    // demo 1: compare the results without estimating the orientation.
+    if((mflag == "None") || (mflag == "iForest"))
+        return;
+
+    int numMax = 0;
+    float fError = 0.0;
+    float fErrorYaw;
+    float minErrorYaw = 360.0;
+    float sampleYaw = 0.0;
+    int nAllLineNum = objMap->mObjectFrame.back()->mObjLinesEigen.rows();
+
+    for(int i = 0; i < 30; i++)
+    {
+        // initial angle.
+        float roll, pitch, yaw;
+        roll = 0.0;
+        pitch = 0.0;
+        yaw = 0.0;
+        float error = 0.0;
+        float errorYaw = 0.0;
+
+        // 1 -> 15: -45° - 0°
+        // 16 -> 30: 0° - 45°
+        if(i < 15)
+            yaw = (0.0 - i*3.0)/180.0 * M_PI;
+        else
+            yaw = (0.0 + (i-15)*3.0)/180.0 * M_PI;
+
+        // object pose in object frame. (Ryaw)
+        float cp = cos(pitch);
+        float sp = sin(pitch);
+        float sr = sin(roll);
+        float cr = cos(roll);
+        float sy = sin(yaw);
+        float cy = cos(yaw);
+        Eigen::Matrix<double,3,3> REigen;
+        REigen<<   cp*cy, (sr*sp*cy)-(cr*sy), (cr*sp*cy)+(sr*sy),
+                cp*sy, (sr*sp*sy)+(cr*cy), (cr*sp*sy)-(sr*cy),
+                -sp,    sr*cp,              cr * cp;
+        cv::Mat Ryaw = Converter::toCvMat(REigen);
+
+        // 8 vertices of the 3D box, world --> object frame.
+        cv::Mat corner_1 = Converter::toCvMat(objMap->mCuboid3D.corner_1_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_2 = Converter::toCvMat(objMap->mCuboid3D.corner_2_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_3 = Converter::toCvMat(objMap->mCuboid3D.corner_3_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_4 = Converter::toCvMat(objMap->mCuboid3D.corner_4_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_5 = Converter::toCvMat(objMap->mCuboid3D.corner_5_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_6 = Converter::toCvMat(objMap->mCuboid3D.corner_6_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_7 = Converter::toCvMat(objMap->mCuboid3D.corner_7_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        cv::Mat corner_8 = Converter::toCvMat(objMap->mCuboid3D.corner_8_w) - Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+
+        // rotate in object frame  + object frame --> world frame.
+        corner_1 = Ryaw * corner_1 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_2 = Ryaw * corner_2 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_3 = Ryaw * corner_3 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_4 = Ryaw * corner_4 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_5 = Ryaw * corner_5 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_6 = Ryaw * corner_6 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_7 = Ryaw * corner_7 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+        corner_8 = Ryaw * corner_8 + Converter::toCvMat(objMap->mCuboid3D.cuboidCenter);
+
+        // step 1. project 8 vertices to image.
+        cv::Point2f point1, point2, point3, point4, point5, point6, point7, point8;
+        point1 = WorldToImg(corner_1);
+        point2 = WorldToImg(corner_2);
+        point3 = WorldToImg(corner_3);
+        point4 = WorldToImg(corner_4);
+        point5 = WorldToImg(corner_5);
+        point6 = WorldToImg(corner_6);
+        point7 = WorldToImg(corner_7);
+        point8 = WorldToImg(corner_8);
+
+        // step 2. angle of 3 edges(lenth, width, height).
+        float angle1;
+        float angle2;
+        float angle3;
+        // left -> right.
+        if(point6.x > point5.x)
+            angle1 = atan2(point6.y - point5.y, point6.x - point5.x);
+        else
+            angle1 = atan2(point5.y - point6.y, point5.x - point6.x);
+        float lenth1 = sqrt((point6.y - point5.y) * (point6.y - point5.y) + (point6.x - point5.x) * (point6.x - point5.x));
+
+        if(point7.x > point6.x)
+            angle2 = atan2(point7.y - point6.y, point7.x - point6.x);
+        else
+            angle2 = atan2(point6.y - point7.y, point6.x - point7.x);
+        float lenth2 = sqrt((point7.y - point6.y) * (point7.y - point6.y) + (point7.x - point6.x) * (point7.x - point6.x));
+
+        if(point6.x > point2.x)
+            angle3 = atan2(point6.y - point2.y, point6.x - point2.x);
+        else
+            angle3 = atan2(point2.y - point6.y, point2.x - point6.x);
+        float lenth3 = sqrt((point6.y - point2.y) * (point6.y - point2.y) + (point6.x - point2.x) * (point6.x - point2.x));
+
+        // step 3. compute angle between detected lines and cube edges.
+        int num = 0;
+        for(int line_id = 0; line_id < objMap->mObjectFrame.back()->mObjLinesEigen.rows(); line_id++)
+        {
+            // angle of detected lines.
+            double x1 = objMap->mObjectFrame.back()->mObjLinesEigen(line_id, 0);
+            double y1 = objMap->mObjectFrame.back()->mObjLinesEigen(line_id, 1);
+            double x2 = objMap->mObjectFrame.back()->mObjLinesEigen(line_id, 2);
+            double y2 = objMap->mObjectFrame.back()->mObjLinesEigen(line_id, 3);
+            float angle = atan2(y2 - y1, x2 - x1);
+
+            // lenth.
+            float lenth = sqrt((y2 - y1)*(y2 - y1) + (x2 - x1)*(x2 - x1));
+
+            // angle between line and 3 edges.
+            float dis_angle1 = abs(angle * 180/M_PI - angle1 * 180/M_PI);
+            float dis_angle2 = abs(angle * 180/M_PI - angle2 * 180/M_PI);
+            float dis_angle3 = abs(angle * 180/M_PI - angle3 * 180/M_PI);
+
+            float th = 5.0;             // threshold of the angle.
+            if(objMap->mnClass == 56)   // chair.
+            {
+                if((dis_angle2 < th) || (dis_angle3 < th))
+                    num++;
+                if(dis_angle1 < th)
+                {
+                    num+=3;
+                }
+            }
+            else
+            {
+                // the shortest edge is lenth1.
+                if( min(min(lenth1, lenth2), lenth3) == lenth1)
+                {
+                    // error with other two edges.
+                    if((dis_angle2 < th) || (dis_angle3 < th))
+                    {
+                        num++;
+                        if(dis_angle2 < th)
+                            error += dis_angle2;
+                        if(dis_angle3 < th)
+                            error += dis_angle3;
+                    }
+
+                    // angle error.
+                    errorYaw+=min(dis_angle2, dis_angle3);
+                }
+                // the shortest edge is lenth2.
+                if( min(min(lenth1, lenth2), lenth3) == lenth2)
+                {
+                    if((dis_angle1 < th) || (dis_angle3 < th))
+                    {
+                        num++;
+                        if(dis_angle1 < th)
+                            error += dis_angle1;
+                        if(dis_angle3 < th)
+                            error += dis_angle3;
+                    }
+                    errorYaw+=min(dis_angle3, dis_angle1);
+                }
+                // the shortest edge is lenth3.
+                if( min(min(lenth1, lenth2), lenth3) == lenth3)
+                {
+                    if((dis_angle1 < th) || (dis_angle2 < th))
+                    {
+                        num++;
+                        if(dis_angle1 < th)
+                            error += dis_angle1;
+                        if(dis_angle2 < th)
+                            error += dis_angle2;
+                    }
+                    errorYaw+=min(dis_angle2, dis_angle1);
+                }
+            }
+        }
+        if(num == 0)
+        {
+            num = 1;
+            errorYaw = 10.0;
+        }
+
+        // record the angle with max number parallel lines.
+        if(num > numMax)
+        {
+            numMax = num;
+            sampleYaw = yaw;
+
+            fError = error; // no used in this version.
+            // average angle error.
+            fErrorYaw = (errorYaw/(float)num)/10.0;
+        }
+    }
+
+    // step 4. scoring.
+    float fScore;
+    fScore = ((float)numMax / (float)nAllLineNum) * (1.0 - 0.1 * fErrorYaw);
+    if(isinf(fScore))
+        fScore = 0.0;
+
+    // measurement： yaw, times, score, angle, angle error.
+    Vector5f AngleTimesAndScore;
+    AngleTimesAndScore[0] = sampleYaw;
+    AngleTimesAndScore[1] = 1.0;
+    AngleTimesAndScore[2] = fScore;
+    AngleTimesAndScore[3] = fError;     // no used in this version.
+    AngleTimesAndScore[4] = fErrorYaw;
+
+    // update multi-frame measurement.
+    bool bNewMeasure = true;
+    for (auto &row : objMap->mvAngleTimesAndScore)
+    {
+        if(row[0] == AngleTimesAndScore[0])
+        {
+            row[1] += 1.0;
+            row[2] = AngleTimesAndScore[2] * (1/row[1]) + row[2] * (1 - 1/row[1]);
+            row[3] = AngleTimesAndScore[3] * (1/row[1]) + row[3] * (1 - 1/row[1]);
+            row[4] = AngleTimesAndScore[4] * (1/row[1]) + row[4] * (1 - 1/row[1]);
+
+            bNewMeasure = false;
+        }
+    }
+    if(bNewMeasure == true)
+    {
+        objMap->mvAngleTimesAndScore.push_back(AngleTimesAndScore);
+    }
+
+    // step 5. rank.
+    index = 1;
+    std::sort(objMap->mvAngleTimesAndScore.begin(),objMap->mvAngleTimesAndScore.end(),VIC);
+    // for (auto &row : objMap->mvAngleTimesAndScore)
+    // {
+    //     std::cout << row[0] * 180.0 / M_PI  << "\t" <<  row[1] << "\t" <<  row[2] << std::endl;
+    // }
+    // the best yaw.
+    int best_num = 0;
+    float best_score = 0;
+    for(int i = 0; i < std::min(3, (int)objMap->mvAngleTimesAndScore.size()); i++)
+    {
+        float fScore = objMap->mvAngleTimesAndScore[i][2];
+        if(fScore >= best_score)
+        {
+            best_score = fScore;
+            best_num = i;
+        }
+    }
+
+    // step 6. update object yaw.
+    objMap->mCuboid3D.rotY = objMap->mvAngleTimesAndScore[best_num][0];
+    objMap->mCuboid3D.mfErrorParallel = objMap->mvAngleTimesAndScore[best_num][3];
+    objMap->mCuboid3D.mfErroeYaw = objMap->mvAngleTimesAndScore[best_num][4];
+} // SampleObjYaw() END -------------------------------------------------------------------------
+
+
 
 // BRIEF [EAO] project quadrics from world to image.
 cv::Mat Tracking::DrawQuadricProject(cv::Mat &im,

@@ -84,6 +84,8 @@ namespace ORB_SLAM2
             cv::Mat sum_pos_3d;         // Summation of points observed in the current frame.
             cv::Mat sum_pos_3d_map;     // Summation of points observed in the map.
 
+            // line.
+            Eigen::MatrixXd mObjLinesEigen;
 
             void CopyBoxes(const BoxSE &box);           // copy box to object_2d.
             void ComputeMeanAndStandardFrame();         // compute the mean and standard deviation of object points in current frame.
@@ -179,7 +181,7 @@ namespace ORB_SLAM2
             float mCenterStandar;
 
             int nMayRepeat = 0;                 // maybe a repeat object.
-            std::map<int, int> mReObj;          // potential associated objects.
+            std::map<int, int> mReObj;          // potential associated objects.   TODO: zhangjiadong  看下这个是做什么？？？
             std::map<int, int> mmAppearSametime;// object id and times simultaneous appearances .
 
             bool bBadErase = false;    //zhangjiadong  用途：（1）如果为true，则不view  （2）在localMapping、 等地方，应用

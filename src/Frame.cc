@@ -529,6 +529,7 @@ Frame::Frame(   const cv::Mat &rawImage,                // color image.
                 const cv::Mat &imGray,
                 const double &timeStamp,
                 ORBextractor* extractor,
+                line_lbd_detect* line_lbd_ptr_frame,    // line detect.
                 ORBVocabulary* voc,
                 cv::Mat &K,
                 cv::Mat &distCoef,

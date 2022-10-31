@@ -487,8 +487,8 @@ void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
         marker2.lifetime = ros::Duration(0.2);
         marker2.id= ++object_id_init;
         marker2.type = visualization_msgs::Marker::POINTS;
-        marker2.scale.x=0.01;
-        marker2.scale.y=0.01;
+        marker2.scale.x=0.02;
+        marker2.scale.y=0.02;
         marker2.pose.orientation.w=1.0;  //????
         marker2.action=visualization_msgs::Marker::ADD;
         marker2.color.r = color[2]/255.0; marker2.color.g = color[1]/255.0; marker2.color.b = color[0]/255.0; marker2.color.a = 1.0;

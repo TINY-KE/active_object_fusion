@@ -440,4 +440,95 @@ void System::SaveTrajectoryKITTI(const string &filename)
     cout << endl << "trajectory saved!" << endl;
 }
 
+void System::SaveObject(const string &filename){
+//    cout << endl << "Saving Objects to " << filename << " ..." << endl;
+//
+//    vector<Object_Map*> vObjects = mpMap->GetObjects();
+//
+//    ofstream f;
+//    f.open(filename.c_str());
+//    f << fixed;
+//
+//    for(size_t i=0; i<vObjects.size(); i++)
+//    {
+//        Object_Map* Object = vObjects[i];
+//
+//        if(Object ->bBadErase)
+//            continue;
+//
+//        cv::Mat p = Object ->GetWorldPos();
+//        f << setprecision(6) << p.at<float>(0, 0) << " " << p.at<float>(1, 0) << " " << p.at<float>(2, 0) << " " << p.at<float>(3, 0) << endl;
+//    }
+//
+//    f.close();
+//    cout << endl << "Plane features saved!" << endl;
+}
+
+//void System::SaveObjectsToFile(string &path){
+//    MatrixXd objMat = GetObjects();
+//    saveMatToFile(objMat, path.c_str());
+//
+//    std::cout << "Save " << objMat.rows() << " VISUAL ellipsoids to " << path << std::endl;
+//}
+
+//MatrixXd System::GetObjects()
+//{
+//    auto ellipsoids = mpMap->GetAllEllipsoidsVisual();
+//
+//    MatrixXd objMat;objMat.resize(0, 11);
+//    int valid_objs = 0;
+//
+//    double config_prob_thresh = Config::ReadValue<double>("Dynamic.Optimizer.EllipsoidProbThresh");
+//    std::cout << " ==== Objects Threshold : " << config_prob_thresh << " ==== " << std::endl;
+//
+//    for(auto e : ellipsoids)
+//    {
+//        if(e->prob < config_prob_thresh) continue;
+//
+//        Vector9d vec = e->toMinimalVector();
+//        VectorXd vec_instance; vec_instance.resize(11);
+//        vec_instance << e->miInstanceID, vec, e->miLabel;
+//
+//        addVecToMatirx(objMat, vec_instance);
+//        valid_objs++;
+//    }
+
+//    return objMat;
+//}
+
+//bool saveMatToFile(Eigen::MatrixXd &matIn, const char* fileName){
+//    ofstream fout;
+//    fout.open(fileName, ios::trunc|ios::out|ios::in);
+//
+//    int rows = matIn.rows();
+//    for(int i=0;i<rows;i++)
+//    {
+//        VectorXd v = matIn.row(i);
+//        int nums = v.rows();
+//        for( int m=0;m<nums;m++){
+//            fout << std::setprecision(18) << v(m);
+//
+//            if( m== nums-1 )
+//                break;
+//            fout << " ";
+//        }
+//
+//        fout << std::endl;
+//    }
+//    fout.close();
+
+//    return true;
+//}
+
+void System::SaveMapPoint( ofstream& f, MapPoint* mp)
+{
+    //保存当前MapPoint的ID和世界坐标值,x,y z
+    f.write((char*)&mp->mnId, sizeof(mp->mnId));
+    cv::Mat mpWorldPos = mp->GetWorldPos();
+    f.write((char*)& mpWorldPos.at<float>(0),sizeof(float));
+    f.write((char*)& mpWorldPos.at<float>(1),sizeof(float));
+    f.write((char*)& mpWorldPos.at<float>(2),sizeof(float));
+}
+
+
 } //namespace ORB_SLAM

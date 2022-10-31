@@ -31,9 +31,11 @@
 
 #include "YOLOv3SE.h"
 
+// line
+#include <line_lbd/line_descriptor.hpp>
+#include <line_lbd/line_lbd_allclass.h>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-
 
 // add plane
 #include "MapPlane.h"
@@ -129,6 +131,7 @@ public:
             const cv::Mat &rawImage,
             const double &timeStamp,
             ORBextractor* extractor,
+            line_lbd_detect* line_lbd_ptr_frame,
             ORBVocabulary* voc,
             cv::Mat &K,
             cv::Mat &distCoef,
@@ -195,6 +198,8 @@ public:
     // Feature extractor. The right is used only in the stereo case.
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
 
+    // line.
+    line_lbd_detect* mpline_lbd_ptr_frame;
 
     // Frame timestamp.
     double mTimeStamp;
@@ -245,6 +250,12 @@ public:
     // In the RGB-D case, RGB images can be distorted.
     std::vector<cv::KeyPoint> mvKeys, mvKeysRight;
     std::vector<cv::KeyPoint> mvKeysUn;
+
+    // line.
+    std::vector< KeyLine> keylines_raw, keylines_out;
+    cv::Mat all_lines_mat;
+    Eigen::MatrixXd all_lines_eigen;
+    std::vector<Eigen::MatrixXd> vObjsLines;
 
     // Corresponding stereo coordinate and depth for each keypoint.
     // "Monocular" keypoints have a negative value.

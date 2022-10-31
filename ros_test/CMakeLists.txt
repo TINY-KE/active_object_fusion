@@ -122,6 +122,9 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/../Thirdparty/DBoW2/DBoW2
     ${PROJECT_SOURCE_DIR}/../Thirdparty/DBoW2/
     ${PROJECT_SOURCE_DIR}/../Thirdparty/g2o/g2o
+    ${PROJECT_SOURCE_DIR}/../Thirdparty/Line3Dpp
+    ${PROJECT_SOURCE_DIR}/../Thirdparty/Line3Dpp/build
+    /home/zhjd/ws_active/src/kinect/EAO-Fusion/Thirdparty/Line3Dpp
     ${PROJECT_SOURCE_DIR}/../src/g2oAddition
     ${PROJECT_SOURCE_DIR}/../include/PEAC
     ${PROJECT_SOURCE_DIR}/../src/DepthFilter
@@ -163,6 +166,20 @@ add_library(${PROJECT_NAME}_lib SHARED
     ../src/g2oAddition/EdgePlane.cc
     ../src/g2oAddition/VertexPlane.cc
 
+    # line
+    ../src/LineDetector.cc
+    # [EAO-SLAM]
+    ../src/line_detect/line_lbd_allclass.cpp     #[z] 线检测？
+    # [EAO-SLAM]
+    ../src/line_detect/libs/binary_descriptor.cpp
+    ../src/line_detect/libs/binary_descriptor_matcher.cpp
+    ../src/line_detect/libs/LSDDetector.cpp
+    ../src/line_detect/libs/lsd.cpp
+    ../src/line_detect/libs/bitarray.hpp
+    ../src/line_detect/libs/bitops.hpp
+    ../src/line_detect/libs/draw.cpp
+    ../src/line_detect/libs/precomp.hpp
+    ../src/line_detect/libs/types.hpp
 )
 
 
@@ -174,6 +191,8 @@ target_link_libraries(${PROJECT_NAME}_lib
     ${PCL_LIBRARIES}
     ${PROJECT_SOURCE_DIR}/../Thirdparty/DBoW2/lib/libDBoW2.so
     ${PROJECT_SOURCE_DIR}/../Thirdparty/g2o/lib/libg2o.so
+    ${PROJECT_SOURCE_DIR}/../Thirdparty/EDLines/EDLinesLib.a
+    ${PROJECT_SOURCE_DIR}/../Thirdparty/Line3Dpp/build/libline3Dpp.so
     boost_system boost_filesystem boost_serialization
     lapack blas
 
@@ -183,8 +202,11 @@ target_link_libraries(${PROJECT_NAME}_lib
 
 
 # my 版本
-add_executable(sync_yolomessage src/real_topic_test.cpp)
+add_executable(sync_yolomessage src/sync_yolomessage.cpp)
 add_dependencies(sync_yolomessage ${catkin_EXPORTED_TARGETS})
 target_link_libraries(sync_yolomessage    ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )
 
 
+# nbv生成
+add_executable(nbv src/nbv.cpp)
+target_link_libraries(nbv    ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )

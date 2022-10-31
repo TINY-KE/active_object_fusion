@@ -40,6 +40,11 @@
 // #include "YOLOv3SE.h"
 #include "Converter.h"
 
+// cube slam.
+#include "detect_3d_cuboid/matrix_utils.h"
+#include <line_lbd/line_descriptor.hpp>
+#include <line_lbd/line_lbd_allclass.h>
+
 // 深度滤波
 //#include "JBF.h"
 #include "Kernel.h"
@@ -88,6 +93,9 @@ public:
 
     // ] associate objects with points.
     void AssociateObjAndPoints(vector<Object_2D *> objs_2d);
+
+    // [EAO] associate objects with lines.
+    void AssociateObjAndLines(vector<Object_2D *> objs_2d);
 
     // [EAO] initialize the object map.
     void InitObjMap(vector<Object_2D *> objs_2d);
@@ -213,6 +221,9 @@ protected:
     //ORB
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
     ORBextractor* mpIniORBextractor;
+
+    // line.
+    line_lbd_detect* line_lbd_ptr;
 
     //BoW
     ORBVocabulary* mpORBVocabulary;
