@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(ros_evo)
+project(active_eao)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE release)
@@ -71,18 +71,6 @@ link_directories( ${PCL_LIBRARY_DIRS} )
 find_package(LAPACK REQUIRED)
 link_directories(${LAPACK_LIBRARY_DIR})
 
-### CUDA及TensorRT相关  zhangjiadong  yolo
-#find_package(CUDA REQUIRED)
-#include_directories(${PROJECT_SOURCE_DIR}/include)
-## cuda
-#include_directories(/usr/local/cuda-11.6/include)
-#link_directories(/usr/local/cuda-11.6/lib64)
-## cudnn
-#include_directories(/home/zhjd/cuda-11.6/include)
-#link_directories(/home/zhjd/cuda-11.6/lib64)
-# tensorrt
-# include_directories(/home/chen/DeepLearning/settings/TensorRT-7.2.1.6/include)
-# link_directories(/home/chen/DeepLearning/settings/TensorRT-7.2.1.6/lib)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Ofast -Wfatal-errors -D_MWAITXINTRIN_H_INCLUDED")
 set(CMAKE_CXX_STANDARD 17)
@@ -141,55 +129,6 @@ include_directories(
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../lib)
 
-#add_library(${PROJECT_NAME}_noros_lib SHARED
-#        # yolox
-#        #    ../src/YOLOX.cc
-#
-#        # base
-#        ../src/System.cc
-#        ../src/Tracking.cc
-#        ../src/LocalMapping.cc
-#        ../src/LoopClosing.cc
-#        ../src/ORBextractor.cc
-#        ../src/ORBmatcher.cc
-#        ../src/FrameDrawer.cc
-#        ../src/Converter.cc
-#        ../src/MapPoint.cc
-#        ../src/KeyFrame.cc
-#        ../src/Map.cc
-#        ../src/MapDrawer.cc
-#        ../src/Optimizer.cc
-#        ../src/PnPsolver.cc
-#        ../src/Frame.cc
-#        ../src/KeyFrameDatabase.cc
-#        ../src/Sim3Solver.cc
-#        ../src/Initializer.cc
-#        ../src/Viewer.cc
-#        ../src/Object.cc      # NOTE [EAO-SLAM]
-#
-#        # plane
-#        ../src/MapPlane.cc
-#        ../src/g2oAddition/EdgePlane.cc
-#        ../src/g2oAddition/VertexPlane.cc
-#        # depth filter
-#        #    ../src/DepthFilter/JBF.cc
-#        #    ../src/DepthFilter/Kernel.cc
-#   )
-#target_link_libraries(${PROJECT_NAME}_noros_lib
-#        ${catkin_LIBRARIES}
-#        ${OpenCV_LIBS}
-#        ${EIGEN3_LIBS}
-#        ${Pangolin_LIBRARIES}
-#        ${PCL_LIBRARIES}
-#        ${PROJECT_SOURCE_DIR}/../Thirdparty/DBoW2/lib/libDBoW2.so
-#        ${PROJECT_SOURCE_DIR}/../Thirdparty/g2o/lib/libg2o.so
-#        boost_system boost_filesystem boost_serialization
-#        lapack blas
-##zhangjiadong yolo
-##        nvinfer
-##        cudart
-#        # dw
-#     )
 
 add_library(${PROJECT_NAME}_lib SHARED
 
@@ -218,21 +157,13 @@ add_library(${PROJECT_NAME}_lib SHARED
 
     #rviz
     ../src/MapPublisher.cc
-#    ../src/FramePublisher.cc
-#1.添加MapPublisher类和配置Rviz，并在每次Track之后利用MapPublisher类发布可视化信息，这里可以直接复用ORB-SLAM中的MapPublisher类和Rviz。
-#2.为Map类添加返回相关信息的接口。
-
-
-    # ros
-    src/message_flow.cc
-    src/image_subscriber.cc
     
     # plane
     ../src/MapPlane.cc
     ../src/g2oAddition/EdgePlane.cc
     ../src/g2oAddition/VertexPlane.cc
 
-        )
+)
 
 
 target_link_libraries(${PROJECT_NAME}_lib
@@ -245,48 +176,15 @@ target_link_libraries(${PROJECT_NAME}_lib
     ${PROJECT_SOURCE_DIR}/../Thirdparty/g2o/lib/libg2o.so
     boost_system boost_filesystem boost_serialization
     lapack blas
-# zhangjiadong yolo
-#        nvinfer
-#    cudart
+
     # dw
     /opt/ros/melodic/lib/libxmlrpcpp.so
 )
 
-# imu版本
-##add_executable(ros_rgbd_imu app/ros_rgbd_imu.cpp)
-##add_dependencies(ros_rgbd_imu ${catkin_EXPORTED_TARGETS})
-##target_link_libraries(ros_rgbd_imu ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
-# rgd版本
-add_executable(ros_rgbd app/ros_rgbd.cpp )   #src/image_subscriber.cc  src/message_flow.cc
-add_dependencies(ros_rgbd ${catkin_EXPORTED_TARGETS})
-target_link_libraries(ros_rgbd ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
+# my 版本
+add_executable(sync_yolomessage src/real_topic_test.cpp)
+add_dependencies(sync_yolomessage ${catkin_EXPORTED_TARGETS})
+target_link_libraries(sync_yolomessage    ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )
 
-# ？？
-## set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../tools)
-#add_executable(bin_vocabulary
-# ../tools/bin_vocabulary.cc)
-#target_link_libraries(bin_vocabulary ${PROJECT_NAME}_lib)
-
-# test版本
-add_executable(sync_test src/real_topic_test.cpp)
-add_dependencies(sync_test ${catkin_EXPORTED_TARGETS})
-target_link_libraries(sync_test    ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )
-
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 

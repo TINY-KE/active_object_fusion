@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros_evo</name>
+  <name>active_eao</name>
   <version>0.0.0</version>
   <description>The ros_evo package</description>
 
