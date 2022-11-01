@@ -53,6 +53,8 @@ Viewer::Viewer( System* pSystem, FrameDrawer *pFrameDrawer,
 
     run_pangolin = fSettings["Viewer.pangolin"];
     run_rviz = fSettings["Viewer.rviz"];
+
+    read_local_object = fSettings["Viewer.readlocalobject"];
 }
 
 void Viewer::Run()
@@ -125,12 +127,19 @@ void Viewer::Run()
     pangolin::OpenGlMatrix viewAbove = pangolin::ModelViewLookAt(mViewpointX,mViewpointY,mViewpointZ, 0,0,0,0.0,-1.0, 0.0);
     pangolin::OpenGlMatrix viewCamera = pangolin::ModelViewLookAt(0,0,0, 0,0,1, 0.0,-1.0, 0.0);
 
-
+    if(read_local_object)
+        read_local_object_file();
     while(1)
     {
+
         if(run_rviz)
             mpMapPub -> Refresh();   //[rviz]
 
+        if(read_local_object)
+        {
+            std::cout<<"[nbv debug] publish local object"<<std::endl;
+            mpMapPub ->PublishObject(vObjects);
+        }
 
         if(run_pangolin){
             //pangolin
@@ -330,5 +339,115 @@ void Viewer::Release()
     unique_lock<mutex> lock(mMutexStop);
     mbStopped = false;
 }
+
+void Viewer::read_local_object_file() {
+    std::string filePath = "/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/Objects_with_points_for_read.txt";
+    ifstream infile(filePath, ios::in);
+    if (!infile.is_open())
+    {
+        cout << "open fail: "<< filePath <<" " << endl;
+        exit(233);
+    }
+    else
+    {
+        std::cout << "read Objects_with_points.txt" << std::endl;
+    }
+
+    vector<double> row;
+
+    cv::Mat cam_pose_mat;
+    int mnid_current = -1;
+//    string s0;
+//    getline(infile, s0);  注销掉无用的line
+    vObjects.clear();
+    string line;
+    int object_num = -1;
+    int type = 1;
+    while (getline(infile, line))
+    {   //std::cout<<line<<std::endl;
+        istringstream istr(line);
+        istr >> type;
+
+        if( type == 1){
+            Object_Map *obj = new Object_Map();
+            object_num ++;
+//            std::cout<<"物体"<<object_num<<std::endl;
+            double temp;
+            istr >> temp;    obj->mnId = temp;
+            istr >> temp;    obj->mnClass = temp;
+            istr >> temp;    obj->mnConfidence = temp;
+            istr >> temp ;  //物体中特征点的数量
+
+            Eigen::MatrixXd object_poses(1, 8); ;
+            istr >> temp;  object_poses(0) = temp;
+            istr >> temp;  object_poses(1) = temp;
+            istr >> temp;  object_poses(2) = temp;
+            istr >> temp;  object_poses(3) = temp;
+            istr >> temp;  object_poses(4) = temp;
+            istr >> temp;  object_poses(5) = temp;
+            istr >> temp;  object_poses(6) = temp;
+            g2o::SE3Quat cam_pose_se3(object_poses.row(0).head(7));
+
+            obj->mCuboid3D.pose = cam_pose_se3;
+            istr >> temp;   obj->mCuboid3D.lenth = temp;
+            istr >> temp;   obj->mCuboid3D.width = temp;
+            istr >> temp;   obj->mCuboid3D.height = temp;
+
+            cmpute_corner(obj);
+
+            vObjects.push_back( obj );
+
+            std::cout<<  "mnId: "<<vObjects[ object_num ]->mnId
+                    <<  ", Class: " << vObjects[ object_num ]->mnClass <<std::endl;
+
+        }
+        else if( type == 0)
+        {
+//            std::cout<<"特征点"<<object_num<<std::endl;
+            double temp;
+            istr >> temp;
+            istr >> temp;
+
+            MapPoint* point = new MapPoint();
+            float x_p, y_p, z_p;
+            istr >> temp;  x_p = temp;
+            istr >> temp;  y_p = temp;
+            istr >> temp;  z_p = temp;
+            std::vector<float> vec{x_p, y_p, z_p};
+            cv::Mat WorldPos(vec);
+
+            point->SetWorldPos(WorldPos) ;
+            vObjects[ object_num ]-> mvpMapObjectMappoints.push_back( point );
+//            mpMapPub -> mpMap->mvObjectMap[ object_num ]->mvpMapObjectMappoints.push_back( &point );
+        }
+
+
+        row.clear();
+        type = -1;
+        istr.clear();
+        line.clear();
+    }
+
+
+}
+
+    void Viewer::cmpute_corner(Object_Map* object) {
+
+        float x_min_obj = (-0.5)*object->mCuboid3D.lenth;
+        float x_max_obj = (0.5)*object->mCuboid3D.lenth;
+        float y_min_obj = (-0.5)*object->mCuboid3D.width;
+        float y_max_obj = (0.5)*object->mCuboid3D.width;
+        float z_min_obj = (-0.5)*object->mCuboid3D.height;
+        float z_max_obj = (0.5)*object->mCuboid3D.height;
+
+        object->mCuboid3D.corner_1 = object->mCuboid3D.pose * Eigen::Vector3d(x_min_obj, y_min_obj, z_min_obj);
+        object->mCuboid3D.corner_2 = object->mCuboid3D.pose * Eigen::Vector3d(x_max_obj, y_min_obj, z_min_obj);
+        object->mCuboid3D.corner_3 = object->mCuboid3D.pose * Eigen::Vector3d(x_max_obj, y_max_obj, z_min_obj);
+        object->mCuboid3D.corner_4 = object->mCuboid3D.pose * Eigen::Vector3d(x_min_obj, y_max_obj, z_min_obj);
+        object->mCuboid3D.corner_5 = object->mCuboid3D.pose * Eigen::Vector3d(x_min_obj, y_min_obj, z_max_obj);
+        object->mCuboid3D.corner_6 = object->mCuboid3D.pose * Eigen::Vector3d(x_max_obj, y_min_obj, z_max_obj);
+        object->mCuboid3D.corner_7 = object->mCuboid3D.pose * Eigen::Vector3d(x_max_obj, y_max_obj, z_max_obj);
+        object->mCuboid3D.corner_8 = object->mCuboid3D.pose * Eigen::Vector3d(x_min_obj, y_max_obj, z_max_obj);
+    }
 
 }

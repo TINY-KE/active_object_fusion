@@ -114,6 +114,9 @@
   + 以上几种BA的区别?
 + 
 + 虚函数: 指向基类的指针在操作它的多态类对象时，会根据不同的类对象，调用其相应的函数，这个函数就是虚函数。
++ Object_Map::UpdateObjPose() 将最新的mCuboid3D.rotP/rotY/rotR, 赋值给Twobj, 进而赋值给 mCuboid3D.pose(这就是物体在世界坐标系下的位姿).
+  + Twobj_without_yaw 只保存了中心坐标, 即: 平行于世界坐标系
+  + 
 
 ### 3 环境构建
 

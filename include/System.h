@@ -107,6 +107,7 @@ public:
     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
     void SaveKeyFrameTrajectoryTUM(const string &filename);
     void SavePlaneFeatures(const string &filename);
+    void SaveObjects(const string &filename, const string &filename_with_point);
     // Save camera trajectory in the KITTI dataset format.
     // Call first Shutdown()
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
@@ -116,6 +117,8 @@ public:
     // SaveMap(const string &filename);
     // LoadMap(const string &filename);
 
+    // zhangjiadong 向map中添加物体,用于nbv test
+    bool addMapObjects(std::vector<Object_Map*> objects);
 private:
 
     // Input sensor

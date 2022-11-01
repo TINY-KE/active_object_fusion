@@ -204,7 +204,7 @@ Tracking::Tracking( System *pSys, ORBVocabulary *pVoc, FrameDrawer *pFrameDrawer
     {
        if (mbReadedGroundtruth == false)  //为什么tracker生成时，就要读取mGroundtruth_mat
         {
-            std::string filePath = WORK_SPACE_PATH + "/data/groundtruth.txt";  
+            std::string filePath = WORK_SPACE_PATH + "/data/groundtruth.txt";
             ifstream infile(filePath, ios::in);
             if (!infile.is_open())
             {
@@ -567,8 +567,8 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB, const cv::Mat &imD, const 
             }
         }
     }else if (miConstraintType ==2){   // 使用IMU  //zhangjiadong
-        
-        mCurrentFrame.mGroundtruthPose_eigen = INIT_POSE;  
+
+        mCurrentFrame.mGroundtruthPose_eigen = INIT_POSE;
         // TODO: 如何获取初始位姿
 
         // mCurrentFrame.mGroundtruthPose_mat = cv::Mat::eye(4, 4, CV_32F);
@@ -1185,11 +1185,11 @@ void Tracking::StereoInitialization()
                         0, 1, 0, 0,
                         0, 0, 1, 0,
                         0, 0, 0, 1;
-    std::cout << "INIT_POSEd"<<INIT_POSE << std::endl;       
+    std::cout << "INIT_POSEd"<<INIT_POSE << std::endl;
     if( miConstraintType ==2  && INIT_POSE ==  matrix_identity  ){  //假设位姿永远不可能正好为整数
         mState =  NOT_INITIALIZED;
     }
-    else 
+    else
     if (mCurrentFrame.N > 50)
     {
         // Set Frame pose to the origin
@@ -1256,7 +1256,7 @@ void Tracking::StereoInitialization()
         {
             // NOTE [EAO] rotate the world coordinate to the initial frame (groundtruth provides the normal vector of the ground).
             // only use the groundtruth of the first frame.
-            // TODO: 以下的InitToGround和GroundToInit,指的是point的坐标变换,与实际坐标系的变换 在名称是相反的(注意:数值是相同的). 为了保持程序原貌, 不做修改. 
+            // TODO: 以下的InitToGround和GroundToInit,指的是point的坐标变换,与实际坐标系的变换 在名称是相反的(注意:数值是相同的). 为了保持程序原貌, 不做修改.
             cv::Mat InitToGround = mCurrentFrame.mGroundtruthPose_mat;   //初始帧的位姿赋予. zhangjiadong
             std::cout << "InitToGround"<<InitToGround << std::endl;
             // cv::Mat InitToGround = cv::Mat::eye(4, 4, CV_32F);

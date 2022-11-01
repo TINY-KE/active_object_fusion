@@ -366,7 +366,7 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
     f.close();
     cout << endl << "trajectory saved!" << endl;
 }
-void System::SavePlaneFeatures(const string &filename) {
+void System::SavePlaneFeatures(const string &filename ) {
     cout << endl << "Saving Plane Features to " << filename << " ..." << endl;
 
     vector<MapPlane*> vMPs = mpMap->GetAllMapPlanes();
@@ -388,6 +388,80 @@ void System::SavePlaneFeatures(const string &filename) {
 
     f.close();
     cout << endl << "Plane features saved!" << endl;
+
+}
+void System::SaveObjects(const string &filename , const string &filename_with_point ) {
+    cout << endl << "Saving Objects to " << filename << " ..." << endl;
+
+    vector<Object_Map*> vObjects = mpMap->GetObjects();
+
+
+    ofstream f_nopoint, f_point;
+    f_nopoint.open(filename.c_str());
+    f_nopoint << fixed;
+    f_point.open(filename_with_point.c_str());
+    f_point << fixed;
+
+    for(size_t i=0; i<vObjects.size(); i++)
+    {
+        Object_Map* object = vObjects[i];
+
+        if(object->bBadErase)
+            continue;
+
+        g2o::SE3Quat pose = object->mCuboid3D.pose;
+        f_point     << "1 "  //物体
+                    << object->mnId << "   "
+                    << object->mnClass << " "
+                    << object->mnConfidence << " "
+                    << object->mvpMapObjectMappoints.size() << "     "
+                    << pose.translation().x() << " "
+                    << pose.translation().y() << " "
+                    << pose.translation().z()<< "     "
+                    << pose.rotation().x() << " "
+                    << pose.rotation().y() << " "
+                    << pose.rotation().z() << " "
+                    << pose.rotation().w() << "     "
+                    << object->mCuboid3D.lenth << " "
+                    << object->mCuboid3D.width << " "
+                    << object->mCuboid3D.height << " "
+                    << endl;
+        f_nopoint     << "1 "  //物体
+                      << object->mnId << "   "
+                      << object->mnClass << " "
+                      << object->mnConfidence << " "
+                      << object->mvpMapObjectMappoints.size() << "     "
+                      << pose.translation().x() << " "
+                      << pose.translation().y() << " "
+                      << pose.translation().z()<< "     "
+                      << pose.rotation().x() << " "
+                      << pose.rotation().y() << " "
+                      << pose.rotation().z() << " "
+                      << pose.rotation().w() << "     "
+                      << object->mCuboid3D.lenth << " "
+                      << object->mCuboid3D.width << " "
+                      << object->mCuboid3D.height << " "
+                      << endl;
+        for( int i =0; i<object->mvpMapObjectMappoints.size() ; i++){
+            cv::Mat mpWorldPos = object->mvpMapObjectMappoints[i]->GetWorldPos();
+            int PointNotBad;
+            if(object->mvpMapObjectMappoints[i]->isBad())
+                PointNotBad = 0;
+            else
+                PointNotBad = 1;
+            f_point   << "0 "  //物体中的点
+                << object->mnId << "   "
+                << PointNotBad << " "
+                << mpWorldPos.at<float>(0) << " "
+                << mpWorldPos.at<float>(1) << " "
+                << mpWorldPos.at<float>(2) << " "
+                << endl;
+        }
+    }
+
+    f_point.close();
+    f_nopoint.close();
+    cout << endl << "Object saved!" << endl;
 
 }
 void System::SaveTrajectoryKITTI(const string &filename)
@@ -440,4 +514,9 @@ void System::SaveTrajectoryKITTI(const string &filename)
     cout << endl << "trajectory saved!" << endl;
 }
 
+bool System::addMapObjects(std::vector<Object_Map*> objects){
+    for(auto & object : objects)
+            mpMap->mvObjectMap.push_back(object);
+
+}
 } //namespace ORB_SLAM

@@ -94,9 +94,14 @@ private:
 
     int run_pangolin;
     int run_rviz;
-
+    int read_local_object;
+    void read_local_object_file();
+    void cmpute_corner(Object_Map* object);
     // demo.
     string mflag;
+
+    //nbv test
+    std::vector<ORB_SLAM2::Object_Map*> vObjects;
 };
 
 }

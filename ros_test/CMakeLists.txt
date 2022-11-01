@@ -188,3 +188,6 @@ add_dependencies(sync_yolomessage ${catkin_EXPORTED_TARGETS})
 target_link_libraries(sync_yolomessage    ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )
 
 
+## nbv 版本
+#add_executable(nbv src/nbv_test.cpp)
+#target_link_libraries(nbv   ${catkin_LIBRARIES}     ${PROJECT_NAME}_lib )

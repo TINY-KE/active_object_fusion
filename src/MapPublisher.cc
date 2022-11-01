@@ -403,6 +403,7 @@ void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
 //        publisher.publish(marker);
 //    }
 //    object_num_last = vObjs.size();
+
     for(size_t i=0; i< vObjs.size(); i++)
     {
         //物体中的点
@@ -471,24 +472,15 @@ void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
 
         publisher.publish(marker);
 
-//        visualization_msgs::Marker marker2;
-//        marker2.id = ++object_id_init;
-////        marker2.lifetime = ros::Duration(0.1);
-//        marker2.header.frame_id= MAP_FRAME_ID;
-//        marker2.header.stamp=ros::Time::now();
-//        marker2.type = visualization_msgs::Marker::POINTS;
-//        marker2.action = visualization_msgs::Marker::ADD;
-//        marker2.color.r = 0.0f; marker.color.g = 1.0f; marker.color.b = 0.0f; marker.color.a = 1.0;
-//        marker2.scale.x = fPointSize *3.0;
-//        marker2.scale.y = fPointSize *3.0;
+
         visualization_msgs::Marker marker2;
         marker2.header.frame_id = MAP_FRAME_ID;
         marker2.ns = "ObjectPoints";
         marker2.lifetime = ros::Duration(0.2);
         marker2.id= ++object_id_init;
         marker2.type = visualization_msgs::Marker::POINTS;
-        marker2.scale.x=0.01;
-        marker2.scale.y=0.01;
+        marker2.scale.x=0.02;
+        marker2.scale.y=0.02;
         marker2.pose.orientation.w=1.0;  //????
         marker2.action=visualization_msgs::Marker::ADD;
         marker2.color.r = color[2]/255.0; marker2.color.g = color[1]/255.0; marker2.color.b = color[0]/255.0; marker2.color.a = 1.0;
@@ -501,9 +493,11 @@ void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
 //                continue;
             geometry_msgs::Point p;
             cv::Mat pos = vpMPs[i]->GetWorldPos();
+            std::cout<<"[nbv debug:1 ]"<<pos <<std::endl;
             p.x=pos.at<float>(0);
             p.y=pos.at<float>(1);
             p.z=pos.at<float>(2);
+            std::cout<<"[nbv debug:2 ]"<<p.x<<" "<<p.y<<" "<<p.z <<std::endl;
             marker2.points.push_back(p);
         }
         publisher.publish(marker2);

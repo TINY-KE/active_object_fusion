@@ -138,6 +138,7 @@ namespace ORB_SLAM2
         float height;
 
         g2o::SE3Quat pose;                      // 6 dof pose.
+        cv::Mat pose_mat = cv::Mat::eye(4, 4, CV_32F);   //cv::mat形式的 物体在世界坐标系下的位姿
         g2o::SE3Quat pose_without_yaw;          // 6 dof pose without rotation.
 
         // angle.
@@ -156,6 +157,7 @@ namespace ORB_SLAM2
     class Object_Map
     {
         public:
+            Object_Map(){}   //zhangjiadong 用于nbv test
             std::vector<Object_2D*> mObjectFrame;
             cv::Rect mLastRect;
             cv::Rect mLastLastRect;

@@ -2257,7 +2257,7 @@ void Object_Map::UpdateObjPose()
     REigen << cp * cy, (sr * sp * cy) - (cr * sy), (cr * sp * cy) + (sr * sy),
         cp * sy, (sr * sp * sy) + (cr * cy), (cr * sp * sy) - (sr * cy),
         -sp, sr * cp, cr * cp;
-    cv::Mat Ryaw = Converter::toCvMat(REigen);
+    cv::Mat Ryaw = Converter::toCvMat(REigen);  //zhangjiadong  这是yaw方向的旋转矩阵??
 
     // Transformation matrix.
     cv::Mat Twobj = cv::Mat::eye(4, 4, CV_32F);
@@ -2265,22 +2265,25 @@ void Object_Map::UpdateObjPose()
     cv::Mat tcw = Twobj.rowRange(0, 3).col(3);
     cv::Mat result = Rcw * Ryaw;
 
-    // notes：将物体转移到世界坐标系下
+    // notes：将物体转移到世界坐标系下 <--zhangjiadong  将最新的mCuboid3D.rotP/rotY/rotR, 赋值给Twobj, 进而赋值给 mCuboid3D.pose .这就是物体在世界坐标系下的位姿
     Twobj.at<float>(0, 0) = result.at<float>(0, 0);
     Twobj.at<float>(0, 1) = result.at<float>(0, 1);
     Twobj.at<float>(0, 2) = result.at<float>(0, 2);
     //Twobj.at<float>(0, 3) = mCenter3D.at<float>(0);
     Twobj.at<float>(0, 3) = mCuboid3D.cuboidCenter[0];
+
     Twobj.at<float>(1, 0) = result.at<float>(1, 0);
     Twobj.at<float>(1, 1) = result.at<float>(1, 1);
     Twobj.at<float>(1, 2) = result.at<float>(1, 2);
     //Twobj.at<float>(1, 3) = mCenter3D.at<float>(1);
     Twobj.at<float>(1, 3) = mCuboid3D.cuboidCenter[1];
+
     Twobj.at<float>(2, 0) = result.at<float>(2, 0);
     Twobj.at<float>(2, 1) = result.at<float>(2, 1);
     Twobj.at<float>(2, 2) = result.at<float>(2, 2);
     //Twobj.at<float>(2, 3) = mCenter3D.at<float>(2);
     Twobj.at<float>(2, 3) = mCuboid3D.cuboidCenter[2];
+
     Twobj.at<float>(3, 0) = 0;
     Twobj.at<float>(3, 1) = 0;
     Twobj.at<float>(3, 2) = 0;
@@ -2299,6 +2302,7 @@ void Object_Map::UpdateObjPose()
     g2o::SE3Quat obj_pose_without_yaw = Converter::toSE3Quat(Twobj_without_yaw);
 
     this->mCuboid3D.pose = obj_pose;
+    this->mCuboid3D.pose_mat = Twobj;
     this->mCuboid3D.pose_without_yaw = obj_pose_without_yaw;
 } // UpdateObjScale()
 

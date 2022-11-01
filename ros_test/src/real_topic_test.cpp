@@ -116,6 +116,8 @@ int main(int argc, char **argv)
     // Save camera trajectory
     system_ptr->SaveKeyFrameTrajectoryTUM("/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/CameraTrajectory.txt");
     system_ptr->SavePlaneFeatures("/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/PlaneFeature.txt");
+    system_ptr->SaveObjects("/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/Objects.txt",
+                            "/home/zhjd/ws_active/src/kinect/EAO-Fusion/eval/Objects_with_points.txt");
     return 0;
 }
 std::vector<BoxSE> darknetRosMsgToBoxSE(std::vector<darknet_ros_msgs::BoundingBox>& boxes){
