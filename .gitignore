@@ -21,6 +21,8 @@ result_associate/
 data/yolo_txts/
 cubeslam_results/*.png
 ros_test/cmake-build-debug
+.idea/
+.vscode/
 # Prerequisites
 *.d
 

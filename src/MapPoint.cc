@@ -327,48 +327,48 @@ bool MapPoint::IsInKeyFrame(KeyFrame *pKF)
     return (mObservations.count(pKF));
 }
 
-void MapPoint::UpdateNormalAndDepth()
-{
-    map<KeyFrame*,size_t> observations;
-    KeyFrame* pRefKF;
-    cv::Mat Pos;
-    {
-        unique_lock<mutex> lock1(mMutexFeatures);
-        unique_lock<mutex> lock2(mMutexPos);
-        if(mbBad)
-            return;
-        observations=mObservations;
-        pRefKF=mpRefKF;
-        Pos = mWorldPos.clone();
-    }
-
-    if(observations.empty())
-        return;
-
-    cv::Mat normal = cv::Mat::zeros(3,1,CV_32F);
-    int n=0;
-    for(map<KeyFrame*,size_t>::iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
-    {
-        KeyFrame* pKF = mit->first;
-        cv::Mat Owi = pKF->GetCameraCenter();
-        cv::Mat normali = mWorldPos - Owi;
-        normal = normal + normali/cv::norm(normali);
-        n++;
-    }
-
-    cv::Mat PC = Pos - pRefKF->GetCameraCenter();
-    const float dist = cv::norm(PC);
-    const int level = pRefKF->mvKeysUn[observations[pRefKF]].octave;
-    const float levelScaleFactor =  pRefKF->mvScaleFactors[level];
-    const int nLevels = pRefKF->mnScaleLevels;
-
-    {
-        unique_lock<mutex> lock3(mMutexPos);
-        mfMaxDistance = dist*levelScaleFactor;
-        mfMinDistance = mfMaxDistance/pRefKF->mvScaleFactors[nLevels-1];
-        mNormalVector = normal/n;
-    }
-}
+//void MapPoint::UpdateNormalAndDepth()
+//{
+//    map<KeyFrame*,size_t> observations;
+//    KeyFrame* pRefKF;
+//    cv::Mat Pos;
+//    {
+//        unique_lock<mutex> lock1(mMutexFeatures);
+//        unique_lock<mutex> lock2(mMutexPos);
+//        if(mbBad)
+//            return;
+//        observations=mObservations;
+//        pRefKF=mpRefKF;
+//        Pos = mWorldPos.clone();
+//    }
+//
+//    if(observations.empty())
+//        return;
+//
+//    cv::Mat normal = cv::Mat::zeros(3,1,CV_32F);
+//    int n=0;
+//    for(map<KeyFrame*,size_t>::iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
+//    {
+//        KeyFrame* pKF = mit->first;
+//        cv::Mat Owi = pKF->GetCameraCenter();
+//        cv::Mat normali = mWorldPos - Owi;
+//        normal = normal + normali/cv::norm(normali);
+//        n++;
+//    }
+//
+//    cv::Mat PC = Pos - pRefKF->GetCameraCenter();
+//    const float dist = cv::norm(PC);
+//    const int level = pRefKF->mvKeysUn[observations[pRefKF]].octave;
+//    const float levelScaleFactor =  pRefKF->mvScaleFactors[level];
+//    const int nLevels = pRefKF->mnScaleLevels;
+//
+//    {
+//        unique_lock<mutex> lock3(mMutexPos);
+//        mfMaxDistance = dist*levelScaleFactor;
+//        mfMinDistance = mfMaxDistance/pRefKF->mvScaleFactors[nLevels-1];
+//        mNormalVector = normal/n;
+//    }
+//}
 
 float MapPoint::GetMinDistanceInvariance()
 {
@@ -392,5 +392,75 @@ int MapPoint::PredictScale(const float &currentDist, const float &logScaleFactor
 
     return ceil(log(ratio)/logScaleFactor);
 }
+
+
+
+
+
+
+//NBV MAM
+void MapPoint::UpdateNormalAndDepth()
+{
+    map<KeyFrame*,size_t> observations;
+    KeyFrame* pRefKF;
+    cv::Mat Pos;
+    {
+        unique_lock<mutex> lock1(mMutexFeatures);
+        unique_lock<mutex> lock2(mMutexPos);
+        if(mbBad)
+            return;
+        observations=mObservations;
+        pRefKF=mpRefKF;
+        Pos = mWorldPos.clone();
+    }
+
+    if(observations.empty())
+        return;
+
+    cv::Mat normal = cv::Mat::zeros(3,1,CV_32F);
+    int n=0;
+    mNormalVectors.clear();
+    theta_sVector.clear();
+    for(map<KeyFrame*,size_t>::iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
+    {
+        KeyFrame* pKF = mit->first;
+        cv::Mat Owi = pKF->GetCameraCenter();
+        cv::Mat normali = mWorldPos - Owi;
+        normal = normal + normali/cv::norm(normali);
+        mNormalVectors.push_back(normali/cv::norm(normali));
+        // compute the viewing angle in the world frame
+        float theta = atan2(normali.at<float>(0,0),normali.at<float>(2,0));
+        theta_sVector.push_back(theta);
+        n++;
+    }
+
+    cv::Mat PC = Pos - pRefKF->GetCameraCenter();
+    const float dist = cv::norm(PC);
+    const int level = pRefKF->mvKeysUn[observations[pRefKF]].octave;
+    const float levelScaleFactor =  pRefKF->mvScaleFactors[level];
+    const int nLevels = pRefKF->mnScaleLevels;
+
+    {
+        unique_lock<mutex> lock3(mMutexPos);
+        mfMaxDistance = dist*levelScaleFactor;
+        mfMinDistance = mfMaxDistance/pRefKF->mvScaleFactors[nLevels-1];
+        mNormalVector = normal/n;
+        // compute the mean and std of viewing angle
+        compute_std_pts(theta_sVector, theta_mean, theta_std);
+    }
+}
+
+void MapPoint::compute_std_pts(std::vector<float> v, float & mean, float & stdev)
+{
+    float sum = std::accumulate(v.begin(), v.end(), 0.0);
+    mean = sum / v.size();
+
+    std::vector<float> diff(v.size());
+    std::transform(v.begin(), v.end(), diff.begin(),
+                std::bind2nd(std::minus<float>(), mean));
+    float sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+    stdev = std::sqrt(sq_sum / v.size());
+}
+//NBV MAM end
 
 } //namespace ORB_SLAM

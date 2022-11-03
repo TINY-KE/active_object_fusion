@@ -48,6 +48,7 @@ public:
     void PublishCurrentCamera(const cv::Mat &Tcw);
     void PublishPlane(const vector<MapPlane *> &vpMPls );
     void PublishObject(const vector<Object_Map*> &vpObjs );
+    void PublishIE(const vector<Object_Map*> &vObjs );
     geometry_msgs::Point corner_to_marker(Eigen::Vector3d& v);
     void SetCurrentCameraPose(const cv::Mat &Tcw);
 
@@ -59,6 +60,7 @@ private:
 
     ros::NodeHandle nh;
     ros::Publisher publisher;
+    ros::Publisher publisher_IE;
 
     visualization_msgs::Marker mPoints;
     visualization_msgs::Marker mReferencePoints;

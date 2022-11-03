@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "/home/zhjd/ws_active/devel/lib/ros_evo/sync_test",
+            "program": "/home/zhjd/ws_active/devel/lib/active_eao/sync_yolomessage",
             // sync_test  ros_rgbd
             "args": [],
             "cwd": "${workspaceFolder}"

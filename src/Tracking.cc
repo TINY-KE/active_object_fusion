@@ -43,6 +43,9 @@ using namespace std;
 #include <eigen3/Eigen/Dense>
 typedef Eigen::Matrix<float,5,1> Vector5f;
 
+//NBV MAM
+#include<camera.h>
+
 namespace ORB_SLAM2
 {
 
@@ -2266,6 +2269,69 @@ bool Tracking::TrackLocalMap()
         }
     }
     // add plane end
+
+
+
+
+    // NBV MAM: check the camera model
+    //map_data MD;
+    //double theta_interval;
+    ////{
+    //    //unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+    //    vector<MapPoint*> vpPts = mpMap->GetAllMapPoints();
+    //    //cout << "totally " << vpPts.size() << " points." << endl;
+    //    for(size_t i=0; i<vpPts.size(); i++){
+    //        if(vpPts[i]->isBad())
+    //            continue;
+    //
+    //        cv::Mat Tsc_curr = mCurrentFrame.mTcw.clone().inv();
+    //
+    //        float minDist = vpPts[i]->GetMinDistanceInvariance();
+    //        float maxDist = vpPts[i]->GetMaxDistanceInvariance();
+    //        float foundRatio = vpPts[i]->GetFoundRatio();
+    //
+    //        //float Dist = sqrt((Tsc_curr.at<float>(0,3) - vpPts[i]->GetWorldPos().at<float>(0))*(Tsc_curr.at<float>(0,3) - vpPts[i]->GetWorldPos().at<float>(0))+
+    //        //(Tsc_curr.at<float>(1,3) - vpPts[i]->GetWorldPos().at<float>(1))*(Tsc_curr.at<float>(1,3) - vpPts[i]->GetWorldPos().at<float>(2))+
+    //        //(Tsc_curr.at<float>(2,3) - vpPts[i]->GetWorldPos().at<float>(2))*(Tsc_curr.at<float>(2,3) - vpPts[i]->GetWorldPos().at<float>(2)));
+    //
+    //        //if((Dist > maxDist)||(Dist < minDist))
+    //        //    continue;
+    //
+    //        MD.Map.push_back(std::vector<double>{vpPts[i]->GetWorldPos().at<float>(0),   vpPts[i]->GetWorldPos().at<float>(1),  vpPts[i]->GetWorldPos().at<float>(2)});
+    //
+    //        if(vpPts[i]->theta_std * 2.5 < 10.0/57.3){
+    //            theta_interval = 10.0/57.3;
+    //        }else{
+    //            theta_interval = vpPts[i]->theta_std * 2.5;
+    //        }
+    //
+    //        MD.UB.push_back(double(vpPts[i]->theta_mean + theta_interval));
+    //        MD.LB.push_back(double(vpPts[i]->theta_mean - theta_interval));
+    //        MD.maxDist.push_back(double(maxDist));
+    //        MD.minDist.push_back(double(minDist));
+    //        MD.foundRatio.push_back(double(foundRatio));
+    //    }
+    ////}
+    //
+    //camera camera_model(MD,20);
+    //// compute the pose in the body frame
+    //if(!mCurrentFrame.mTcw.empty()){
+    //
+    //    cv::Mat Tsc = mCurrentFrame.mTcw.clone().inv();
+    //    cv::Mat T_wb_mat = cv::Mat(T_ws_mat*Tsc*T_cb_mat);
+    //
+    //    cv::Mat Twb_cam = T_wb_initial_mat.inv()*T_wb_mat;
+    //
+    //    //visible_info VI;
+    //    int visible_pts;
+    //    visible_pts = camera_model.countVisible(Twb_cam);
+    //
+    //    cout << "number of points predicted = " << visible_pts << endl;
+    //}
+    // NBV MAM: check the camera model end
+
+
+
 
     // Decide if the tracking was succesful
     // More restrictive if there was a relocalization recently

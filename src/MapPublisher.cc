@@ -120,13 +120,14 @@ MapPublisher::MapPublisher(Map* pMap):mpMap(pMap), mbCameraUpdated(false)
 
     //Configure Publisher
     publisher = nh.advertise<visualization_msgs::Marker>("objectmap", 1000);
+    publisher_IE = nh.advertise<visualization_msgs::Marker>("object_ie", 1000);
 
     publisher.publish(mPoints);
     publisher.publish(mReferencePoints);
     publisher.publish(mCovisibilityGraph);
     publisher.publish(mKeyFrames);
     publisher.publish(mCurrentCamera);
-//    TODO:ZHANGJIADONG
+
 }
 
 void MapPublisher::Refresh()
@@ -142,7 +143,7 @@ void MapPublisher::Refresh()
         vector<Object_Map*> vMapObjects = mpMap -> GetObjects();
         PublishMapPoints(vMapPoints, vRefMapPoints);   
         PublishKeyFrames(vKeyFrames);
-//        PublishPlane(vMapPlanes);
+        //PublishPlane(vMapPlanes);
         PublishObject(vMapObjects);
     }    
 }
@@ -380,7 +381,7 @@ void MapPublisher::PublishPlane(const vector<MapPlane *> &vpMPls ){
 
     mPoints.header.stamp = ros::Time::now();
     mReferencePoints.header.stamp = ros::Time::now();
-//    publisher.publish(mPlanes);
+    //publisher.publish(mPlanes);
 }
 
 geometry_msgs::Point MapPublisher::corner_to_marker(Eigen::Vector3d& v){
@@ -393,16 +394,16 @@ geometry_msgs::Point MapPublisher::corner_to_marker(Eigen::Vector3d& v){
 
 void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
 
-//    for(size_t i=vObjs.size(); i<object_num_last ; i++)
-//    {
-//        visualization_msgs::Marker marker;
-//        marker.id = object_id_init + i;
-//        marker.header.frame_id= MAP_FRAME_ID;
-//        marker.header.stamp=ros::Time::now();
-//        marker.action = visualization_msgs::Marker::DELETE;
-//        publisher.publish(marker);
-//    }
-//    object_num_last = vObjs.size();
+    //for(size_t i=vObjs.size(); i<object_num_last ; i++)
+    //{
+    //    visualization_msgs::Marker marker;
+    //    marker.id = object_id_init + i;
+    //    marker.header.frame_id= MAP_FRAME_ID;
+    //    marker.header.stamp=ros::Time::now();
+    //    marker.action = visualization_msgs::Marker::DELETE;
+    //    publisher.publish(marker);
+    //}
+    //object_num_last = vObjs.size();
 
     for(size_t i=0; i< vObjs.size(); i++)
     {
@@ -489,15 +490,15 @@ void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
 
         for(size_t i=0, iend=vpMPs.size();  i<iend;  i++)
         {
-//            if(vpMPs[i]->isBad() )
-//                continue;
+            //if(vpMPs[i]->isBad() )
+            //    continue;
             geometry_msgs::Point p;
             cv::Mat pos = vpMPs[i]->GetWorldPos();
-            std::cout<<"[nbv debug:1 ]"<<pos <<std::endl;
+            //std::cout<<"[nbv debug:1 ]"<<pos <<std::endl;
             p.x=pos.at<float>(0);
             p.y=pos.at<float>(1);
             p.z=pos.at<float>(2);
-            std::cout<<"[nbv debug:2 ]"<<p.x<<" "<<p.y<<" "<<p.z <<std::endl;
+            //std::cout<<"[nbv debug:2 ]"<<p.x<<" "<<p.y<<" "<<p.z <<std::endl;
             marker2.points.push_back(p);
         }
         publisher.publish(marker2);
@@ -505,7 +506,67 @@ void MapPublisher::PublishObject(const vector<Object_Map*> &vObjs ){
 
 }
 
+void MapPublisher::PublishIE(const vector<Object_Map*> &vObjs ){
+    // color.
+    std::vector<vector<float> > colors_bgr{ {135,0,248},  {255,0,253},  {4,254,119},  {255,126,1},  {0,112,255},  {0,250,250}   };
+    vector<float> color;
 
+    for(size_t i=0; i< vObjs.size(); i++){
+        double  pie = 3.1415926;
+        Object_Map* obj = vObjs[i];
+        color = colors_bgr[obj->mnClass % 6];
+        double diameter = sqrt(obj->mCuboid3D.width * obj->mCuboid3D.width   +   obj->mCuboid3D.lenth * obj->mCuboid3D.lenth )/2.0;
+        for( int x=0; x<obj->vInforEntroy.size(); x++){
+            double angle_divide = 2*pie/obj->vInforEntroy.size();
+            double angle = angle_divide * ( x + 0.5 );
+            double p_x = cos(angle) * diameter;
+            double p_y = sin(angle) * diameter;
+
+            double h_divide =  obj->mCuboid3D.height/obj->vInforEntroy[x].size();
+            for( int y=0; y<obj->vInforEntroy[x].size(); y++){
+                //计算纵坐标
+                double p_z = h_divide * (y+0.5) - obj->mCuboid3D.height/2.0;
+
+                // 物体坐标系 -> 世界坐标系
+                Eigen::Vector3d p_world = obj->mCuboid3D.pose * Eigen::Vector3d(p_x, p_y, p_z);
+                geometry_msgs::Point p;
+                p.x=p_world[0];
+                p.y=p_world[1];
+                p.z=p_world[2];
+
+                //生成 rviz marker
+                visualization_msgs::Marker marker;
+                marker.header.frame_id = MAP_FRAME_ID;
+                marker.ns = "InformationEntroy";
+                marker.lifetime = ros::Duration(5.0);
+                marker.id= (x*obj->vInforEntroy.size() + y) + obj->mnId*18*18  ;  //TODO:绝对数字
+                marker.type = visualization_msgs::Marker::POINTS;
+                marker.scale.x=0.03;
+                marker.scale.y=0.08;
+                marker.pose.orientation.w=1.0;  //????
+                marker.action=visualization_msgs::Marker::ADD;
+                //double color = obj->vInforEntroy[x][y];  marker.color.r = color; marker.color.g = color; marker.color.b = color; marker.color.a = 1.0;
+                std::cout<< "x" <<x << ", y" <<y << ", prob" <<obj->vgrid_prob[x][y] <<std::endl;
+                if(obj->vgrid_prob[x][y]>0.5){
+                    //marker.color.r =1.0; marker.color.g = 1.0; marker.color.b = 1.0; marker.color.a = 1.0;
+                    marker.color.r =color[2]/255.0; marker.color.g = color[1]/255.0; marker.color.b = color[0]/255.0; marker.color.a = 0.7;
+                }
+                else if(obj->vgrid_prob[x][y]<0.5){
+                    //marker.color.r =0.0; marker.color.g = 0.0; marker.color.b = 0.0; marker.color.a = 1.0;
+                    marker.color.r =color[2]/255.0; marker.color.g = color[1]/255.0; marker.color.b = color[0]/255.0; marker.color.a = 0.15;
+                }
+                else {
+                    marker.color.r =1.0; marker.color.g = 1.0; marker.color.b = 1.0; marker.color.a = 0.2;
+                }
+                marker.points.push_back(p);
+                publisher_IE.publish(marker);
+            }
+        }
+        std::cout<<std::endl<<std::endl<<std::endl;
+
+
+    }
+}
 void MapPublisher::SetCurrentCameraPose(const cv::Mat &Tcw)    //zhangjiadong  用在map.cc中
 {
     boost::mutex::scoped_lock lock(mMutexCamera);

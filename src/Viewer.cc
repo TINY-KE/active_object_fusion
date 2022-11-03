@@ -137,8 +137,9 @@ void Viewer::Run()
 
         if(read_local_object)
         {
-            std::cout<<"[nbv debug] publish local object"<<std::endl;
+            //std::cout<<"[nbv debug] publish local object"<<std::endl;
             mpMapPub ->PublishObject(vObjects);
+            mpMapPub ->PublishIE(vObjects);
         }
 
         if(run_pangolin){
@@ -379,9 +380,9 @@ void Viewer::read_local_object_file() {
             istr >> temp ;  //物体中特征点的数量
 
             Eigen::MatrixXd object_poses(1, 8); ;
-            istr >> temp;  object_poses(0) = temp;
-            istr >> temp;  object_poses(1) = temp;
-            istr >> temp;  object_poses(2) = temp;
+            istr >> temp;  object_poses(0) = temp;  obj->mCuboid3D.cuboidCenter(0) = temp;
+            istr >> temp;  object_poses(1) = temp;  obj->mCuboid3D.cuboidCenter(1) = temp;
+            istr >> temp;  object_poses(2) = temp;  obj->mCuboid3D.cuboidCenter(2) = temp;
             istr >> temp;  object_poses(3) = temp;
             istr >> temp;  object_poses(4) = temp;
             istr >> temp;  object_poses(5) = temp;
@@ -428,6 +429,9 @@ void Viewer::read_local_object_file() {
         line.clear();
     }
 
+    for(int i=0; i<vObjects.size(); i++){
+        vObjects[i]->compute_information_entroy();
+    }
 
 }
 
